@@ -89,8 +89,8 @@ export function ProductCard({ product }: { product: Product }) {
             onClick={() => {
               addItem({
                 slug: product.slug,
-                size: product.sizes[0],
-                color: product.colors[0],
+                size: product.sizes[0] ?? "Único",
+                color: product.colors[0] ?? "Padrão",
                 quantity: 1,
               });
               setCartOpen(true);
