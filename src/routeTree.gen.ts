@@ -10,11 +10,40 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CarrinhoRouteImport } from './routes/carrinho'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContaRouteImport } from './routes/conta'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
+import { Route as InstitucionalContatoRouteImport } from './routes/institucional.contato'
+import { Route as InstitucionalPrivacidadeRouteImport } from './routes/institucional.privacidade'
+import { Route as InstitucionalSobreRouteImport } from './routes/institucional.sobre'
+import { Route as InstitucionalTermosRouteImport } from './routes/institucional.termos'
+import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarrinhoRoute = CarrinhoRouteImport.update({
+  id: '/carrinho',
+  path: '/carrinho',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaRoute = ContaRouteImport.update({
+  id: '/conta',
+  path: '/conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
@@ -22,31 +51,127 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InstitucionalContatoRoute = InstitucionalContatoRouteImport.update({
+  id: '/institucional/contato',
+  path: '/institucional/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstitucionalPrivacidadeRoute =
+  InstitucionalPrivacidadeRouteImport.update({
+    id: '/institucional/privacidade',
+    path: '/institucional/privacidade',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const InstitucionalSobreRoute = InstitucionalSobreRouteImport.update({
+  id: '/institucional/sobre',
+  path: '/institucional/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstitucionalTermosRoute = InstitucionalTermosRouteImport.update({
+  id: '/institucional/termos',
+  path: '/institucional/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
+  id: '/produto/$slug',
+  path: '/produto/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRoute
+  '/favoritos': typeof FavoritosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/institucional/contato': typeof InstitucionalContatoRoute
+  '/institucional/privacidade': typeof InstitucionalPrivacidadeRoute
+  '/institucional/sobre': typeof InstitucionalSobreRoute
+  '/institucional/termos': typeof InstitucionalTermosRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRoute
+  '/favoritos': typeof FavoritosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/institucional/contato': typeof InstitucionalContatoRoute
+  '/institucional/privacidade': typeof InstitucionalPrivacidadeRoute
+  '/institucional/sobre': typeof InstitucionalSobreRoute
+  '/institucional/termos': typeof InstitucionalTermosRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRoute
+  '/favoritos': typeof FavoritosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/institucional/contato': typeof InstitucionalContatoRoute
+  '/institucional/privacidade': typeof InstitucionalPrivacidadeRoute
+  '/institucional/sobre': typeof InstitucionalSobreRoute
+  '/institucional/termos': typeof InstitucionalTermosRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categoria/$slug'
+  fullPaths:
+    | '/'
+    | '/carrinho'
+    | '/checkout'
+    | '/conta'
+    | '/favoritos'
+    | '/categoria/$slug'
+    | '/institucional/contato'
+    | '/institucional/privacidade'
+    | '/institucional/sobre'
+    | '/institucional/termos'
+    | '/produto/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categoria/$slug'
-  id: '__root__' | '/' | '/categoria/$slug'
+  to:
+    | '/'
+    | '/carrinho'
+    | '/checkout'
+    | '/conta'
+    | '/favoritos'
+    | '/categoria/$slug'
+    | '/institucional/contato'
+    | '/institucional/privacidade'
+    | '/institucional/sobre'
+    | '/institucional/termos'
+    | '/produto/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/carrinho'
+    | '/checkout'
+    | '/conta'
+    | '/favoritos'
+    | '/categoria/$slug'
+    | '/institucional/contato'
+    | '/institucional/privacidade'
+    | '/institucional/sobre'
+    | '/institucional/termos'
+    | '/produto/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CarrinhoRoute: typeof CarrinhoRoute
+  CheckoutRoute: typeof CheckoutRoute
+  ContaRoute: typeof ContaRoute
+  FavoritosRoute: typeof FavoritosRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
+  InstitucionalContatoRoute: typeof InstitucionalContatoRoute
+  InstitucionalPrivacidadeRoute: typeof InstitucionalPrivacidadeRoute
+  InstitucionalSobreRoute: typeof InstitucionalSobreRoute
+  InstitucionalTermosRoute: typeof InstitucionalTermosRoute
+  ProdutoSlugRoute: typeof ProdutoSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,6 +183,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carrinho': {
+      id: '/carrinho'
+      path: '/carrinho'
+      fullPath: '/carrinho'
+      preLoaderRoute: typeof CarrinhoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta': {
+      id: '/conta'
+      path: '/conta'
+      fullPath: '/conta'
+      preLoaderRoute: typeof ContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/categoria/$slug': {
       id: '/categoria/$slug'
       path: '/categoria/$slug'
@@ -65,12 +218,56 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/institucional/contato': {
+      id: '/institucional/contato'
+      path: '/institucional/contato'
+      fullPath: '/institucional/contato'
+      preLoaderRoute: typeof InstitucionalContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/institucional/privacidade': {
+      id: '/institucional/privacidade'
+      path: '/institucional/privacidade'
+      fullPath: '/institucional/privacidade'
+      preLoaderRoute: typeof InstitucionalPrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/institucional/sobre': {
+      id: '/institucional/sobre'
+      path: '/institucional/sobre'
+      fullPath: '/institucional/sobre'
+      preLoaderRoute: typeof InstitucionalSobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/institucional/termos': {
+      id: '/institucional/termos'
+      path: '/institucional/termos'
+      fullPath: '/institucional/termos'
+      preLoaderRoute: typeof InstitucionalTermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produto/$slug': {
+      id: '/produto/$slug'
+      path: '/produto/$slug'
+      fullPath: '/produto/$slug'
+      preLoaderRoute: typeof ProdutoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CarrinhoRoute: CarrinhoRoute,
+  CheckoutRoute: CheckoutRoute,
+  ContaRoute: ContaRoute,
+  FavoritosRoute: FavoritosRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
+  InstitucionalContatoRoute: InstitucionalContatoRoute,
+  InstitucionalPrivacidadeRoute: InstitucionalPrivacidadeRoute,
+  InstitucionalSobreRoute: InstitucionalSobreRoute,
+  InstitucionalTermosRoute: InstitucionalTermosRoute,
+  ProdutoSlugRoute: ProdutoSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
