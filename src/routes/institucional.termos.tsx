@@ -34,11 +34,11 @@ const blocks = [
   },
   {
     title: "Trocas e devoluções",
-    text: "Você tem 7 dias corridos após o recebimento para desistir da compra. A peça deve estar sem uso, com etiquetas e embalagem originais.",
+    text: "Você tem 7 dias corridos após o recebimento para desistir da compra (Direito de Arrependimento). A peça deve estar obrigatoriamente sem uso, com etiquetas originais e na embalagem original. Veja as exceções para itens íntimos abaixo.",
   },
   {
     title: "Itens íntimos",
-    text: "Por razões sanitárias, produtos de sexy shop e peças íntimas só são aceitos para troca se o lacre estiver intacto.",
+    text: "Por razões sanitárias e de higiene, produtos de sexy shop e peças íntimas (lingerie) só são aceitos para troca ou devolução se a embalagem original e o lacre do fabricante estiverem totalmente intactos e sem sinais de violação. Peças que foram provadas ou que tiveram o lacre rompido não podem ser trocadas ou devolvidas.",
   },
   {
     title: "Semijoias",

@@ -326,6 +326,7 @@ function ProductsManager() {
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" size="icon" onClick={() => setEditing(p)}>
                       <Edit className="h-4 w-4" />
+                      <span className="sr-only">editar</span>
                     </Button>
                     <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(p.slug)}>
                       <Trash2 className="h-4 w-4" />
