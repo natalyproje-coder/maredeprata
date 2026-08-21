@@ -456,7 +456,4 @@ export function installments(value: number, times = 6) {
   return `${times}x de ${formatPrice(value / times)} sem juros`;
 }
 
-export const WHATSAPP_NUMBER = "5512991139998";
-export const WHATSAPP_MESSAGE =
-  "Olá! Gostaria de saber mais sobre um produto da Maré de Prata.";
-export const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+export const whatsappLink = (number?: string) => `https://wa.me/${number || "5512991139998"}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre um produto da Maré de Prata.")}`;

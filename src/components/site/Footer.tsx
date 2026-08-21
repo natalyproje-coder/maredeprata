@@ -7,6 +7,12 @@ export function Footer() {
   const location = useLocation();
   const whatsappNumber = useSiteText("whatsapp_number");
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre um produto da Maré de Prata.`;
+  const cnpj = useSiteText("business_cnpj");
+  const businessName = useSiteText("business_name");
+  const businessEmail = useSiteText("business_email");
+  const instagramUrl = useSiteText("instagram_url");
+  const facebookUrl = useSiteText("facebook_url");
+  const tiktokUrl = useSiteText("tiktok_url");
 
   const isAdminPath = location.pathname.startsWith("/admin");
   if (isAdminPath) return null;
@@ -23,7 +29,7 @@ export function Footer() {
             </p>
             <div className="mt-6 flex gap-3">
               <a
-                href="https://instagram.com"
+                href={instagramUrl}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -32,7 +38,7 @@ export function Footer() {
                 <Instagram className="h-4 w-4" />
               </a>
               <a
-                href="https://facebook.com"
+                href={facebookUrl}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
@@ -41,7 +47,7 @@ export function Footer() {
                 <Facebook className="h-4 w-4" />
               </a>
               <a
-                href="https://tiktok.com"
+                href={tiktokUrl}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="TikTok"
@@ -96,7 +102,7 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="h-3.5 w-3.5" /> ola@maredeprata.com
+                <Mail className="h-3.5 w-3.5" /> {businessEmail}
               </li>
               <li>Seg a sex, 9h às 18h</li>
               <li>Sáb, 9h às 13h</li>
@@ -124,7 +130,7 @@ export function Footer() {
             “Entre o desejo e o brilho.”
           </p>
           <p className="mt-6 text-[0.65rem] tracking-[0.2em] text-muted-foreground uppercase">
-            © {new Date().getFullYear()} Maré de Prata · CNPJ 00.000.000/0001-00
+            © {new Date().getFullYear()} {businessName} · CNPJ {cnpj}
           </p>
         </div>
       </div>
