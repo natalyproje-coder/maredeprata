@@ -131,7 +131,20 @@ function ProductsManager() {
   const handleUpsert = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await upsertProduct({ data: editing });
+      const payload = {
+        ...editing,
+        category_name: editing.category_name || (editing.category ? editing.category.charAt(0).toUpperCase() + editing.category.slice(1) : "Lingerie"),
+        in_stock: editing.stock_quantity > 0,
+        compare_at: editing.compareAt,
+        stock_quantity: editing.stock_quantity,
+        // Remove virtual fields not in DB
+        compareAt: undefined,
+        categoryName: undefined,
+        inStock: undefined,
+        createdAt: undefined,
+      };
+      
+      await upsertProduct({ data: payload });
       toast.success("Produto salvo com sucesso!");
       setEditing(null);
       window.location.reload();
@@ -330,7 +343,9 @@ function ProductsManager() {
           description: "",
           material: "",
           care: "",
-          details: []
+          details: [],
+          stock_quantity: 0,
+          meta: {}
         })}>
           <Plus className="mr-2 h-4 w-4" /> Novo Produto
         </Button>
