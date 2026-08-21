@@ -674,3 +674,4 @@ function CategoriesManager() {
       </div>
     </div>
   );
+}
