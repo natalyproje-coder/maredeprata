@@ -36,6 +36,10 @@ const virtual: Record<string, { name: string; description: string }> = {
     name: "Ofertas",
     description: "Seleção com preço especial enquanto durarem os estoques.",
   },
+  todos: {
+    name: "Busca",
+    description: "Resultados da sua pesquisa em todo o nosso catálogo.",
+  },
 };
 
 export const Route = createFileRoute("/categoria/$slug")({
