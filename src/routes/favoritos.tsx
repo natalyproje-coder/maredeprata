@@ -37,12 +37,12 @@ function FavoritesPage() {
 
       {items.length === 0 ? (
         <div className="py-24 text-center">
-          <p className="text-sm text-muted-foreground">
-            Você ainda não guardou nenhuma peça.
+          <p className="text-sm text-muted-foreground italic">
+            Você ainda não adicionou favoritos. Sua seleção de desejos aparecerá aqui.
           </p>
-          <Button asChild className="mt-6 tracking-[0.24em] uppercase">
-            <Link to="/categoria/$slug" params={{ slug: "lingerie" }}>
-              Descobrir peças
+          <Button asChild className="mt-8 tracking-[0.24em] uppercase h-12 px-8">
+            <Link to="/categoria/$slug" params={{ slug: "todos" }}>
+              Explorar curadoria
             </Link>
           </Button>
         </div>
