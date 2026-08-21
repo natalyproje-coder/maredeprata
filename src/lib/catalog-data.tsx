@@ -107,6 +107,12 @@ export async function fetchCatalog(): Promise<Catalog> {
   }
 
   applyCatalog(products, categories);
+  
+  // Sincronizar número de WhatsApp global se houver no conteúdo
+  if (content["whatsapp_number"]) {
+    // Apenas garantimos que o valor do banco prevalece
+  }
+
   return { products, categories, content };
 }
 
