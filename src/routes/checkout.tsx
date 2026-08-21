@@ -134,7 +134,7 @@ function CheckoutPage() {
 
     try {
       // Create order in database
-      await createOrder({ data: {
+      const orderPayload = {
         order_number: code,
         user_id: userId,
         customer_name: customerName,
@@ -144,7 +144,15 @@ function CheckoutPage() {
         items: items,
         total_amount: total,
         status: 'pending'
-      }});
+      };
+      
+      console.log("Submitting order:", orderPayload);
+      
+      const result = await createOrder({ data: orderPayload });
+      
+      if (!result.success) {
+        throw new Error("Result success is false");
+      }
 
       // Update profile with address for next time if logged in
       if (userId) {
@@ -179,9 +187,9 @@ function CheckoutPage() {
       setTimeout(() => {
         window.open(waLink, '_blank');
       }, 1500);
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao processar pedido.");
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      toast.error(`Erro ao processar pedido: ${err.message || "Tente novamente."}`);
     }
   }
 
