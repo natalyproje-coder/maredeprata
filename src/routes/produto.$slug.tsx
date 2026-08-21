@@ -219,9 +219,12 @@ function ProductPage() {
             {installments(product.price)} · ou {formatPrice(product.price * 0.95)} no Pix (5% OFF)
           </p>
 
-          <p className="mt-8 text-sm leading-relaxed text-muted-foreground">
+          <div className="mt-8 text-sm leading-relaxed text-muted-foreground">
             {product.description}
-          </p>
+            {product.meta?.volume && (
+              <p className="mt-4 font-medium text-pearl">Volume: {product.meta.volume}</p>
+            )}
+          </div>
 
           {/* COR */}
           <div className="mt-8">
