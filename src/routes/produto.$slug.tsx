@@ -208,7 +208,7 @@ function ProductPage() {
             ) : null}
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            {installments(product.price)} · ou {formatPrice(product.price * 0.95)} no Pix
+            {installments(product.price)} · ou {formatPrice(product.price * 0.95)} no Pix (5% OFF)
           </p>
 
           <p className="mt-8 text-sm leading-relaxed text-muted-foreground">
@@ -291,7 +291,7 @@ function ProductPage() {
             >
               {product.inStock ? (
                 <Link to="/checkout" onClick={add}>
-                  Comprar
+                  Comprar agora
                 </Link>
               ) : (
                 <span>Esgotado</span>
