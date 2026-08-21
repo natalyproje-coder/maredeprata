@@ -34,9 +34,9 @@ const virtual: Record<string, { name: string; description: string }> = {
 };
 
 export const Route = createFileRoute("/categoria/$slug")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    q: (search.q as string) || undefined,
-  }) as { q?: string },
+  validateSearch: (search: Record<string, unknown>): { q?: string } => ({
+    q: search.q as string | undefined,
+  }),
   loader: ({ params }) => {
     const category = getCategory(params.slug);
     const meta = category
