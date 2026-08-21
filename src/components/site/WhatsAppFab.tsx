@@ -1,7 +1,10 @@
 import { MessageCircle } from "lucide-react";
-import { whatsappLink } from "@/lib/catalog";
+import { useSiteText } from "@/lib/catalog-data";
 
 export function WhatsAppFab() {
+  const whatsappNumber = useSiteText("whatsapp_number");
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre um produto da Maré de Prata.`;
+  
   return (
     <a
       href={whatsappLink}
