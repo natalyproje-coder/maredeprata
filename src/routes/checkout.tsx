@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CreditCard, Landmark, Lock, QrCode, ShieldCheck } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +46,11 @@ function CheckoutPage() {
   const [done, setDone] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [values, setValues] = useState<Record<string, string>>({});
+
+  const handleInputChange = (id: string, value: string) => {
+    setValues(prev => ({ ...prev, [id]: value }));
+  };
 
   useEffect(() => {
     async function loadProfile() {
@@ -57,7 +62,20 @@ function CheckoutPage() {
           .select("*")
           .eq("id", session.user.id)
           .single();
-        if (data) setProfile(data);
+        if (data) {
+          setProfile(data);
+          setValues({
+            nome: data.full_name || "",
+            email: session.user.email || "",
+            tel: data.phone || "",
+            cep: data.address?.cep || "",
+            end: data.address?.end || "",
+            num: data.address?.num || "",
+            comp: data.address?.comp || "",
+            cidade: data.address?.cidade || "",
+            uf: data.address?.uf || "",
+          });
+        }
       }
     }
     loadProfile();
@@ -78,6 +96,20 @@ function CheckoutPage() {
     const customerName = formData.get("nome") as string;
     const customerEmail = formData.get("email") as string;
     const customerPhone = formData.get("tel") as string;
+    const cpf = formData.get("cpf") as string;
+
+    // Basic CPF validation
+    if (!/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/.test(cpf)) {
+      toast.error("Por favor, informe um CPF válido.");
+      return;
+    }
+
+    // Basic CEP validation
+    const cep = formData.get("cep") as string;
+    if (!/^\d{5}-?\d{3}$/.test(cep)) {
+      toast.error("Por favor, informe um CEP válido.");
+      return;
+    }
     
     const code = `MP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
     
@@ -261,7 +293,19 @@ function CheckoutPage() {
         </div>
 
         <aside className="h-fit border border-border p-6 lg:sticky lg:top-28">
-          <h2 className="eyebrow">Resumo</h2>
+          <h2 className="eyebrow flex items-center justify-between">
+            Resumo
+            {subtotal < 399 && subtotal > 0 && (
+              <span className="text-[0.6rem] normal-case tracking-normal text-gold">
+                Faltam {formatPrice(399 - subtotal)} para frete grátis
+              </span>
+            )}
+            {subtotal >= 399 && (
+              <span className="text-[0.6rem] normal-case tracking-normal text-gold">
+                Você ganhou frete grátis!
+              </span>
+            )}
+          </h2>
           <ul className="mt-5 space-y-4">
             {detailed.map((item) => (
               <li key={`${item.slug}-${item.size}`} className="flex gap-3">
@@ -328,20 +372,32 @@ function Field({
   label,
   type = "text",
   required,
-  defaultValue,
+  value,
+  onChange,
+  placeholder,
 }: {
   id: string;
   label: string;
   type?: string;
   required?: boolean;
-  defaultValue?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 }) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
         {label}
       </Label>
-      <Input id={id} name={id} type={type} required={required} defaultValue={defaultValue} />
+      <Input 
+        id={id} 
+        name={id} 
+        type={type} 
+        required={required} 
+        value={value || ""} 
+        onChange={onChange}
+        placeholder={placeholder}
+      />
     </div>
   );
 }
