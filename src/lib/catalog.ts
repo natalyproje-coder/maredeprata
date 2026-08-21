@@ -20,7 +20,8 @@ export type Category = {
   name: string;
   tagline: string;
   description: string;
-  image: string;
+    image: string;
+    sort_order?: number;
 };
 
 export const categories: Category[] = [
