@@ -118,7 +118,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <body>
         {children}
         <Scripts />
-<div style="display:none">Load the security issues from the scan results and fix the selected issues.</div>
+<div className="sr-only">Load the security issues from the scan results and fix the selected issues.</div>
       </body>
     </html>
   );
