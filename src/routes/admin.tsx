@@ -9,7 +9,9 @@ import {
   Trash2, 
   Save, 
   X,
-  ChevronLeft
+  ChevronLeft,
+  Upload,
+  AlertCircle
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -28,6 +30,7 @@ import {
 import { useCatalog } from "@/lib/catalog-data";
 import { updateSiteContent, deleteProduct, upsertProduct } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
@@ -169,7 +172,7 @@ function ProductsManager() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>Preço</Label>
               <Input 
@@ -181,13 +184,73 @@ function ProductsManager() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Preço Antigo (Opcional)</Label>
+              <Label>Preço Antigo</Label>
               <Input 
                 type="number" 
                 step="0.01"
                 value={editing.compareAt || ""} 
                 onChange={e => setEditing({...editing, compareAt: e.target.value ? Number(e.target.value) : null})}
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Estoque</Label>
+              <Input 
+                type="number" 
+                value={editing.stock_quantity || 0} 
+                onChange={e => setEditing({...editing, stock_quantity: Number(e.target.value)})}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Imagens do Produto</Label>
+            <div className="grid grid-cols-4 gap-4 mb-2">
+              {editing.images.map((img: string, i: number) => (
+                <div key={i} className="relative aspect-square border border-border bg-background group">
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <button 
+                    type="button"
+                    onClick={() => setEditing({...editing, images: editing.images.filter((_: any, idx: number) => idx !== i)})}
+                    className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+              <label className="flex flex-col items-center justify-center aspect-square border border-dashed border-border hover:border-silver cursor-pointer transition-colors">
+                <Upload className="h-4 w-4 text-muted-foreground mb-1" />
+                <span className="text-[0.6rem] uppercase tracking-wider text-muted-foreground">Upload</span>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const fileExt = file.name.split('.').pop();
+                      const fileName = `${Math.random()}.${fileExt}`;
+                      const filePath = `${fileName}`;
+                      
+                      const { error: uploadError } = await supabase.storage
+                        .from('product-images')
+                        .upload(filePath, file);
+
+                      if (uploadError) throw uploadError;
+
+                      const { data: { publicUrl } } = supabase.storage
+                        .from('product-images')
+                        .getPublicUrl(filePath);
+
+                      setEditing({...editing, images: [...editing.images, publicUrl]});
+                      toast.success("Imagem carregada!");
+                    } catch (err) {
+                      toast.error("Erro no upload.");
+                    }
+                  }}
+                />
+              </label>
             </div>
           </div>
 
@@ -236,6 +299,7 @@ function ProductsManager() {
               <TableHead>Produto</TableHead>
               <TableHead>Categoria</TableHead>
               <TableHead>Preço</TableHead>
+              <TableHead>Estoque</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -245,6 +309,19 @@ function ProductsManager() {
                 <TableCell className="font-medium">{p.name}</TableCell>
                 <TableCell className="text-muted-foreground">{p.categoryName}</TableCell>
                 <TableCell>R$ {p.price.toFixed(2)}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-xs font-medium",
+                      p.stock_quantity <= 0 ? "text-destructive" : p.stock_quantity < 5 ? "text-amber-500" : "text-muted-foreground"
+                    )}>
+                      {p.stock_quantity || 0}
+                    </span>
+                    {p.stock_quantity <= 5 && (
+                      <AlertCircle className={cn("h-3 w-3", p.stock_quantity <= 0 ? "text-destructive" : "text-amber-500")} />
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" size="icon" onClick={() => setEditing(p)}>

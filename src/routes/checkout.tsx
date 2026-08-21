@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CreditCard, Landmark, Lock, QrCode, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,8 @@ import { formatPrice, installments } from "@/lib/catalog";
 import { useSiteText } from "@/lib/catalog-data";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { createOrder, updateProfile } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -42,12 +44,30 @@ function CheckoutPage() {
   const whatsappNumber = useSiteText("whatsapp_number");
   const [method, setMethod] = useState<(typeof payments)[number]["id"]>("pix");
   const [done, setDone] = useState<string | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setUserId(session.user.id);
+        const { data } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+        if (data) setProfile(data);
+      }
+    }
+    loadProfile();
+  }, []);
 
   const shipping = subtotal >= 399 || subtotal === 0 ? 0 : 24.9;
   const pixDiscount = method === "pix" ? subtotal * 0.05 : 0;
   const total = Math.max(0, subtotal - pixDiscount) + shipping;
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (detailed.length === 0) {
       toast.error("Sua sacola está vazia.");
@@ -56,33 +76,80 @@ function CheckoutPage() {
 
     const formData = new FormData(event.currentTarget);
     const customerName = formData.get("nome") as string;
+    const customerEmail = formData.get("email") as string;
+    const customerPhone = formData.get("tel") as string;
     
-    const code = `MP-${Math.floor(100000 + Math.random() * 899999)}`;
+    const code = `MP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
     
-    // Build WhatsApp message
-    const itemsSummary = detailed.map(item => 
-      `• ${item.product.name} (${item.size}, ${item.color}) x${item.quantity} - ${formatPrice(item.product.price * item.quantity)}`
-    ).join('\n');
+    const shippingAddress = {
+      cep: formData.get("cep"),
+      end: formData.get("end"),
+      num: formData.get("num"),
+      comp: formData.get("comp"),
+      cidade: formData.get("cidade"),
+      uf: formData.get("uf"),
+    };
 
-    const message = `Olá! Meu nome é ${customerName}. Acabei de fazer um pedido na Maré de Prata!\n\n` +
-      `*Pedido:* ${code}\n` +
-      `*Itens:*\n${itemsSummary}\n\n` +
-      `*Subtotal:* ${formatPrice(subtotal)}\n` +
-      `*Frete:* ${shipping === 0 ? "Grátis" : formatPrice(shipping)}\n` +
-      `*Desconto Pix:* ${formatPrice(pixDiscount)}\n` +
-      `*Total:* ${formatPrice(total)}\n\n` +
-      `*Forma de Pagamento:* ${payments.find(p => p.id === method)?.label}\n\n` +
-      `Por favor, me informe os próximos passos.`;
+    const items = detailed.map(item => ({
+      slug: item.product.slug,
+      name: item.product.name,
+      size: item.size,
+      color: item.color,
+      quantity: item.quantity,
+      price: item.product.price
+    }));
 
-    const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    
-    clearCart();
-    setDone(code);
-    toast.success("Pedido gerado! Redirecionando para o WhatsApp...");
-    
-    setTimeout(() => {
-      window.open(waLink, '_blank');
-    }, 1500);
+    try {
+      // Create order in database
+      await createOrder({ data: {
+        order_number: code,
+        user_id: userId,
+        customer_name: customerName,
+        customer_email: customerEmail,
+        customer_phone: customerPhone,
+        shipping_address: shippingAddress,
+        items: items,
+        total_amount: total,
+        status: 'pending'
+      }});
+
+      // Update profile with address for next time if logged in
+      if (userId) {
+        await updateProfile({ data: {
+          full_name: customerName,
+          phone: customerPhone,
+          address: shippingAddress
+        }});
+      }
+
+      // Build WhatsApp message
+      const itemsSummary = detailed.map(item => 
+        `• ${item.product.name} (${item.size}, ${item.color}) x${item.quantity} - ${formatPrice(item.product.price * item.quantity)}`
+      ).join('\n');
+
+      const message = `Olá! Meu nome é ${customerName}. Acabei de fazer um pedido na Maré de Prata!\n\n` +
+        `*Pedido:* ${code}\n` +
+        `*Itens:*\n${itemsSummary}\n\n` +
+        `*Subtotal:* ${formatPrice(subtotal)}\n` +
+        `*Frete:* ${shipping === 0 ? "Grátis" : formatPrice(shipping)}\n` +
+        `*Desconto Pix:* ${formatPrice(pixDiscount)}\n` +
+        `*Total:* ${formatPrice(total)}\n\n` +
+        `*Forma de Pagamento:* ${payments.find(p => p.id === method)?.label}\n\n` +
+        `Por favor, me informe os próximos passos.`;
+
+      const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+      
+      clearCart();
+      setDone(code);
+      toast.success("Pedido gerado! Redirecionando para o WhatsApp...");
+      
+      setTimeout(() => {
+        window.open(waLink, '_blank');
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao processar pedido.");
+    }
   }
 
   if (done) {
@@ -136,22 +203,22 @@ function CheckoutPage() {
           <section>
             <h2 className="font-display text-xl">Identificação</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field id="nome" label="Nome completo" required />
-              <Field id="email" label="E-mail" type="email" required />
+              <Field id="nome" label="Nome completo" defaultValue={profile?.full_name} required />
+              <Field id="email" label="E-mail" type="email" defaultValue={profile?.email} required />
               <Field id="cpf" label="CPF" required />
-              <Field id="tel" label="Celular / WhatsApp" required />
+              <Field id="tel" label="Celular / WhatsApp" defaultValue={profile?.phone} required />
             </div>
           </section>
 
           <section>
             <h2 className="font-display text-xl">Entrega</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field id="cep" label="CEP" required />
-              <Field id="end" label="Endereço" required />
-              <Field id="num" label="Número" required />
-              <Field id="comp" label="Complemento" />
-              <Field id="cidade" label="Cidade" required />
-              <Field id="uf" label="Estado" required />
+              <Field id="cep" label="CEP" defaultValue={profile?.address?.cep} required />
+              <Field id="end" label="Endereço" defaultValue={profile?.address?.end} required />
+              <Field id="num" label="Número" defaultValue={profile?.address?.num} required />
+              <Field id="comp" label="Complemento" defaultValue={profile?.address?.comp} />
+              <Field id="cidade" label="Cidade" defaultValue={profile?.address?.cidade} required />
+              <Field id="uf" label="Estado" defaultValue={profile?.address?.uf} required />
             </div>
             <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-silver" />
@@ -261,18 +328,20 @@ function Field({
   label,
   type = "text",
   required,
+  defaultValue,
 }: {
   id: string;
   label: string;
   type?: string;
   required?: boolean;
+  defaultValue?: string;
 }) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
         {label}
       </Label>
-      <Input id={id} name={id} type={type} required={required} />
+      <Input id={id} name={id} type={type} required={required} defaultValue={defaultValue} />
     </div>
   );
 }

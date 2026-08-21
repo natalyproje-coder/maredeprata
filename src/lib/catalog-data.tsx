@@ -39,6 +39,7 @@ type ProductRow = {
   description: string;
   details: unknown;
   care: string;
+  stock_quantity: number;
 };
 
 export function rowToProduct(row: ProductRow): Product {
@@ -61,6 +62,7 @@ export function rowToProduct(row: ProductRow): Product {
       ? (row.details as { label: string; value: string }[])
       : [],
     care: row.care,
+    stock_quantity: row.stock_quantity || 0,
   };
 
   if (row.compare_at != null) {
