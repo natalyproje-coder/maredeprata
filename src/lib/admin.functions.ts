@@ -45,3 +45,32 @@ export const upsertProduct = createServerFn({ method: "POST" })
     if (error) throw error;
     return { success: true };
   });
+
+export const createOrder = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.any().parse(data))
+  .handler(async ({ data }) => {
+    const { error } = await supabase
+      .from("orders")
+      .insert(data);
+    
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const updateProfile = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.any().parse(data))
+  .handler(async ({ data }) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const { error } = await supabase
+      .from("profiles")
+      .upsert({
+        id: session.user.id,
+        ...data,
+        updated_at: new Date().toISOString()
+      });
+    
+    if (error) throw error;
+    return { success: true };
+  });
