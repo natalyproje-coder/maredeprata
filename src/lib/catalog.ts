@@ -126,6 +126,7 @@ export const products: Product[] = [
       { label: "Detalhes", value: "Aro leve, alças reguláveis, fecho metálico prata" },
     ],
     care: "Lavar à mão em água fria com sabão neutro. Não torcer, secar à sombra.",
+    stock_quantity: 10,
   },
   {
     slug: "body-luar-de-renda",
@@ -151,6 +152,7 @@ export const products: Product[] = [
       { label: "Detalhes", value: "Bordado manual, forro discreto" },
     ],
     care: "Lavagem delicada à mão. Não usar alvejante nem secadora.",
+    stock_quantity: 10,
   },
   {
     slug: "camisola-seda-da-lua",
@@ -178,6 +180,7 @@ export const products: Product[] = [
       { label: "Detalhes", value: "Alças reguláveis, fenda lateral discreta" },
     ],
     care: "Lavar à mão ou ciclo delicado a 30°C. Passar em temperatura baixa.",
+    stock_quantity: 10,
   },
   {
     slug: "robe-mare-alta",
@@ -202,6 +205,7 @@ export const products: Product[] = [
       { label: "Detalhes", value: "Manga ampla, faixa removível" },
     ],
     care: "Ciclo delicado a 30°C. Não usar secadora.",
+    stock_quantity: 10,
   },
   {
     slug: "jogo-de-cama-pearl-tide",
@@ -228,6 +232,7 @@ export const products: Product[] = [
       { label: "Tamanhos", value: "Casal, Queen e King" },
     ],
     care: "Lavar a 30°C com peças de cor semelhante. Passar do lado avesso.",
+    stock_quantity: 10,
   },
   {
     slug: "colar-pearl-tide-prata",
@@ -254,6 +259,7 @@ export const products: Product[] = [
       { label: "Tamanho", value: "Corrente 45cm com extensor de 3cm" },
     ],
     care: "Evite contato com perfume, cloro e produtos de limpeza. Guarde em saquinho antioxidante.",
+    stock_quantity: 10,
   },
   {
     slug: "brincos-maresia-ouro",
@@ -280,6 +286,7 @@ export const products: Product[] = [
       { label: "Tamanho", value: "2,2cm de comprimento" },
     ],
     care: "Retire antes de dormir e de tomar banho. Limpe com flanela seca.",
+    stock_quantity: 10,
   },
   {
     slug: "kit-toque-de-seda",
@@ -306,6 +313,7 @@ export const products: Product[] = [
       { label: "Validade", value: "24 meses (óleo)" },
     ],
     care: "Mantenha em local seco e ao abrigo da luz. Uso externo.",
+    stock_quantity: 10,
   },
   {
     slug: "oleo-de-banho-noite-de-mare",
@@ -330,6 +338,7 @@ export const products: Product[] = [
       { label: "Validade", value: "24 meses" },
     ],
     care: "Uso externo. Realize teste de sensibilidade antes do primeiro uso.",
+    stock_quantity: 10,
   },
   {
     slug: "conjunto-pulseira-e-anel-onda",
@@ -354,6 +363,7 @@ export const products: Product[] = [
       { label: "Tamanho", value: "Anel 14 ao 20, pulseira ajustável" },
     ],
     care: "Guarde separadamente para evitar riscos. Limpe com flanela.",
+    stock_quantity: 10,
   },
   {
     slug: "calcinha-brisa-de-renda",
@@ -378,6 +388,7 @@ export const products: Product[] = [
       { label: "Detalhes", value: "Forro em algodão" },
     ],
     care: "Lavar à mão em água fria. Não usar alvejante.",
+    stock_quantity: 10,
   },
   {
     slug: "pijama-cetim-maresia",
@@ -404,6 +415,7 @@ export const products: Product[] = [
       { label: "Detalhes", value: "Vivo prata, bolso frontal" },
     ],
     care: "Ciclo delicado a 30°C. Passar em temperatura baixa.",
+    stock_quantity: 10,
   },
 ];
 
