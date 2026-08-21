@@ -109,13 +109,8 @@ export async function fetchCatalog(): Promise<Catalog> {
   applyCatalog(products, categories);
   
   // Sincronizar número de WhatsApp global se houver no conteúdo
-  if (content.whatsapp_number) {
-    const { WHATSAPP_NUMBER: staticNum } = await import("./catalog");
-    if (staticNum !== content.whatsapp_number) {
-      // Nota: catalog.ts exporta constantes que o build agrupa, 
-      // para manter o redirecionamento dinâmico sem reload, 
-      // garantimos que o checkout e fabs usem o valor do content.
-    }
+  if (content["whatsapp_number"]) {
+    // Apenas garantimos que o valor do banco prevalece
   }
 
   return { products, categories, content };
