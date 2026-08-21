@@ -263,6 +263,50 @@ function ProductsManager() {
             />
           </div>
 
+          <div className="space-y-4 border border-border bg-secondary/20 p-4">
+            <h3 className="text-xs font-medium uppercase tracking-widest text-silver">Metadados Técnicos</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Guia de Tamanhos (Tipo)</Label>
+                <select 
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={editing.meta?.size_chart_type || ""}
+                  onChange={e => setEditing({
+                    ...editing, 
+                    meta: { ...editing.meta, size_chart_type: e.target.value }
+                  })}
+                >
+                  <option value="">Nenhum</option>
+                  <option value="lingerie">Lingerie (P/M/G/GG)</option>
+                  <option value="jewelry">Joias (Aros 12-24)</option>
+                  <option value="clothing">Roupas de Cama (Solteiro/Casal/...)</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Volume / Peso (ex: 50ml)</Label>
+                <Input 
+                  value={editing.meta?.volume || ""}
+                  onChange={e => setEditing({
+                    ...editing, 
+                    meta: { ...editing.meta, volume: e.target.value }
+                  })}
+                  placeholder="Para Sexy Shop"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Informações de Segurança / Modo de Uso</Label>
+              <Textarea 
+                value={editing.meta?.safety_info || ""}
+                onChange={e => setEditing({
+                  ...editing, 
+                  meta: { ...editing.meta, safety_info: e.target.value }
+                })}
+                placeholder="Contraindicações ou como usar"
+              />
+            </div>
+          </div>
+
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => setEditing(null)}>Cancelar</Button>
             <Button type="submit">Salvar Produto</Button>
