@@ -236,22 +236,22 @@ function CheckoutPage() {
           <section>
             <h2 className="font-display text-xl">Identificação</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field id="nome" label="Nome completo" value={values.nome} onChange={(e) => handleInputChange("nome", e.target.value)} required />
-              <Field id="email" label="E-mail" type="email" value={values.email} onChange={(e) => handleInputChange("email", e.target.value)} required />
-              <Field id="cpf" label="CPF" value={values.cpf} onChange={(e) => handleInputChange("cpf", e.target.value)} placeholder="000.000.000-00" required />
-              <Field id="tel" label="Celular / WhatsApp" value={values.tel} onChange={(e) => handleInputChange("tel", e.target.value)} placeholder="(12) 99999-9999" required />
+              <Field id="nome" label="Nome completo" value={values["nome"]} onChange={(e) => handleInputChange("nome", e.target.value)} required />
+              <Field id="email" label="E-mail" type="email" value={values["email"]} onChange={(e) => handleInputChange("email", e.target.value)} required />
+              <Field id="cpf" label="CPF" value={values["cpf"]} onChange={(e) => handleInputChange("cpf", e.target.value)} placeholder="000.000.000-00" required />
+              <Field id="tel" label="Celular / WhatsApp" value={values["tel"]} onChange={(e) => handleInputChange("tel", e.target.value)} placeholder="(12) 99999-9999" required />
             </div>
           </section>
 
           <section>
             <h2 className="font-display text-xl">Entrega</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field id="cep" label="CEP" value={values.cep} onChange={(e) => handleInputChange("cep", e.target.value)} placeholder="00000-000" required />
-              <Field id="end" label="Endereço" value={values.end} onChange={(e) => handleInputChange("end", e.target.value)} required />
-              <Field id="num" label="Número" value={values.num} onChange={(e) => handleInputChange("num", e.target.value)} required />
-              <Field id="comp" label="Complemento" value={values.comp} onChange={(e) => handleInputChange("comp", e.target.value)} />
-              <Field id="cidade" label="Cidade" value={values.cidade} onChange={(e) => handleInputChange("cidade", e.target.value)} required />
-              <Field id="uf" label="Estado" value={values.uf} onChange={(e) => handleInputChange("uf", e.target.value)} required />
+              <Field id="cep" label="CEP" value={values["cep"]} onChange={(e) => handleInputChange("cep", e.target.value)} placeholder="00000-000" required />
+              <Field id="end" label="Endereço" value={values["end"]} onChange={(e) => handleInputChange("end", e.target.value)} required />
+              <Field id="num" label="Número" value={values["num"]} onChange={(e) => handleInputChange("num", e.target.value)} required />
+              <Field id="comp" label="Complemento" value={values["comp"]} onChange={(e) => handleInputChange("comp", e.target.value)} />
+              <Field id="cidade" label="Cidade" value={values["cidade"]} onChange={(e) => handleInputChange("cidade", e.target.value)} required />
+              <Field id="uf" label="Estado" value={values["uf"]} onChange={(e) => handleInputChange("uf", e.target.value)} required />
             </div>
             <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-silver" />
@@ -284,10 +284,10 @@ function CheckoutPage() {
             </div>
             {method === "card" ? (
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <Field id="cardnum" label="Número do cartão" value={values.cardnum} onChange={(e) => handleInputChange("cardnum", e.target.value)} required />
-                <Field id="cardname" label="Nome impresso" value={values.cardname} onChange={(e) => handleInputChange("cardname", e.target.value)} required />
-                <Field id="cardval" label="Validade (MM/AA)" value={values.cardval} onChange={(e) => handleInputChange("cardval", e.target.value)} required />
-                <Field id="cardcvv" label="CVV" value={values.cardcvv} onChange={(e) => handleInputChange("cardcvv", e.target.value)} required />
+                <Field id="cardnum" label="Número do cartão" value={values["cardnum"]} onChange={(e) => handleInputChange("cardnum", e.target.value)} required />
+                <Field id="cardname" label="Nome impresso" value={values["cardname"]} onChange={(e) => handleInputChange("cardname", e.target.value)} required />
+                <Field id="cardval" label="Validade (MM/AA)" value={values["cardval"]} onChange={(e) => handleInputChange("cardval", e.target.value)} required />
+                <Field id="cardcvv" label="CVV" value={values["cardcvv"]} onChange={(e) => handleInputChange("cardcvv", e.target.value)} required />
               </div>
             ) : null}
           </section>
@@ -381,7 +381,7 @@ function Field({
   label: string;
   type?: string;
   required?: boolean;
-  value?: string;
+  value?: string | null;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
 }) {
