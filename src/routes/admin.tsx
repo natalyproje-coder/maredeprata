@@ -11,7 +11,8 @@ import {
   X,
   ChevronLeft,
   Upload,
-  AlertCircle
+  AlertCircle,
+  Layers
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -28,7 +29,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCatalog } from "@/lib/catalog-data";
-import { updateSiteContent, deleteProduct, upsertProduct } from "@/lib/admin.functions";
+import { 
+  updateSiteContent, 
+  deleteProduct, 
+  upsertProduct, 
+  upsertCategory, 
+  deleteCategory 
+} from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +45,7 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [view, setView] = useState<"products" | "content">("products");
+  const [view, setView] = useState<"products" | "content" | "categories">("products");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -93,6 +100,14 @@ function AdminLayout() {
             <Package className="h-4 w-4" /> Produtos
           </button>
           <button
+            onClick={() => setView("categories")}
+            className={`flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors ${
+              view === "categories" ? "bg-secondary text-pearl" : "text-muted-foreground hover:bg-secondary/50"
+            }`}
+          >
+            <Layers className="h-4 w-4" /> Categorias
+          </button>
+          <button
             onClick={() => setView("content")}
             className={`flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors ${
               view === "content" ? "bg-secondary text-pearl" : "text-muted-foreground hover:bg-secondary/50"
@@ -106,7 +121,13 @@ function AdminLayout() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto p-10">
         <div className="mx-auto max-w-5xl">
-          {view === "products" ? <ProductsManager /> : <ContentManager />}
+          {view === "products" ? (
+            <ProductsManager />
+          ) : view === "categories" ? (
+            <CategoriesManager />
+          ) : (
+            <ContentManager />
+          )}
         </div>
       </main>
     </div>
@@ -114,7 +135,7 @@ function AdminLayout() {
 }
 
 function ProductsManager() {
-  const { products } = useCatalog();
+  const { products, categories } = useCatalog();
   const [editing, setEditing] = useState<any>(null);
 
   const handleDelete = async (slug: string) => {
@@ -131,25 +152,40 @@ function ProductsManager() {
   const handleUpsert = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Precise data cleaning to ensure we only send what the table expects
       const payload = {
-        ...editing,
-        category_name: editing.category_name || (editing.category ? editing.category.charAt(0).toUpperCase() + editing.category.slice(1) : "Lingerie"),
-        in_stock: editing.stock_quantity > 0,
-        compare_at: editing.compareAt,
-        stock_quantity: editing.stock_quantity,
-        // Remove virtual fields not in DB
-        compareAt: undefined,
-        categoryName: undefined,
-        inStock: undefined,
-        createdAt: undefined,
+        slug: editing.slug,
+        name: editing.name,
+        category: editing.category,
+        category_name: editing.category_name || (categories.find(c => c.slug === editing.category)?.name) || "Lingerie",
+        price: Number(editing.price),
+        compare_at: editing.compare_at ?? editing.compareAt ?? null,
+        images: editing.images || [],
+        badge: editing.badge || null,
+        material: editing.material || "",
+        in_stock: Number(editing.stock_quantity) > 0,
+        description: editing.description || "",
+        details: Array.isArray(editing.details) ? editing.details : [],
+        care: editing.care || "",
+        stock_quantity: Number(editing.stock_quantity),
+        meta: editing.meta || {},
+        bestseller: !!editing.bestseller,
+        colors: Array.isArray(editing.colors) ? editing.colors : [],
+        sizes: Array.isArray(editing.sizes) ? editing.sizes : [],
       };
+
+      // If it's an update, ensure ID is included if present
+      if (editing.id) {
+        (payload as any).id = editing.id;
+      }
       
       await upsertProduct({ data: payload });
       toast.success("Produto salvo com sucesso!");
       setEditing(null);
       window.location.reload();
-    } catch (e) {
-      toast.error("Erro ao salvar produto.");
+    } catch (e: any) {
+      console.error("Upsert product error:", e);
+      toast.error(`Erro ao salvar produto: ${e.message || "Erro desconhecido"}`);
     }
   };
 
@@ -267,13 +303,34 @@ function ProductsManager() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Descrição</Label>
-            <Textarea 
-              value={editing.description} 
-              onChange={e => setEditing({...editing, description: e.target.value})}
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Categoria</Label>
+              <select 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={editing.category}
+                onChange={e => {
+                  const cat = categories.find(c => c.slug === e.target.value);
+                  setEditing({
+                    ...editing, 
+                    category: e.target.value,
+                    category_name: cat?.name || ""
+                  });
+                }}
+              >
+                {categories.map(c => (
+                  <option key={c.slug} value={c.slug}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label>Descrição Curta</Label>
+              <Input 
+                value={editing.description} 
+                onChange={e => setEditing({...editing, description: e.target.value})}
+                required
+              />
+            </div>
           </div>
 
           <div className="space-y-4 border border-border bg-secondary/20 p-4">
@@ -451,3 +508,169 @@ function ContentManager() {
     </div>
   );
 }
+
+function CategoriesManager() {
+  const { categories } = useCatalog();
+  const [editing, setEditing] = useState<any>(null);
+
+  const handleDelete = async (slug: string) => {
+    if (!confirm("Tem certeza que deseja apagar esta categoria?")) return;
+    try {
+      await deleteCategory({ data: { slug } });
+      toast.success("Categoria removida com sucesso!");
+      window.location.reload();
+    } catch (e) {
+      toast.error("Erro ao remover categoria.");
+    }
+  };
+
+  const handleUpsert = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        slug: editing.slug,
+        name: editing.name,
+        tagline: editing.tagline || "",
+        description: editing.description || "",
+        image: editing.image || "/img/cat-lingerie.jpg",
+        sort_order: Number(editing.sort_order) || 0,
+      };
+
+      if (editing.id) {
+        (payload as any).id = editing.id;
+      }
+      
+      await upsertCategory({ data: payload });
+      toast.success("Categoria salva com sucesso!");
+      setEditing(null);
+      window.location.reload();
+    } catch (e: any) {
+      console.error("Upsert category error:", e);
+      toast.error(`Erro ao salvar categoria: ${e.message}`);
+    }
+  };
+
+  if (editing) {
+    return (
+      <div>
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="ghost" size="icon" onClick={() => setEditing(null)}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <h2 className="font-display text-3xl">
+            {editing.id ? "Editar Categoria" : "Nova Categoria"}
+          </h2>
+        </div>
+        
+        <form onSubmit={handleUpsert} className="grid gap-6 bg-card/50 p-8 border border-border">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Nome</Label>
+              <Input 
+                value={editing.name} 
+                onChange={e => setEditing({...editing, name: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Slug (URL)</Label>
+              <Input 
+                value={editing.slug} 
+                onChange={e => setEditing({...editing, slug: e.target.value})}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Slogan (Tagline)</Label>
+            <Input 
+              value={editing.tagline} 
+              onChange={e => setEditing({...editing, tagline: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Descrição</Label>
+            <Textarea 
+              value={editing.description} 
+              onChange={e => setEditing({...editing, description: e.target.value})}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>URL da Imagem</Label>
+              <Input 
+                value={editing.image} 
+                onChange={e => setEditing({...editing, image: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Ordem de Exibição</Label>
+              <Input 
+                type="number"
+                value={editing.sort_order} 
+                onChange={e => setEditing({...editing, sort_order: e.target.value})}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={() => setEditing(null)}>Cancelar</Button>
+            <Button type="submit">Salvar Categoria</Button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="font-display text-3xl">Gerenciar Categorias</h2>
+        <Button onClick={() => setEditing({
+          name: "", 
+          slug: "", 
+          tagline: "",
+          description: "",
+          image: "",
+          sort_order: 0
+        })}>
+          <Plus className="mr-2 h-4 w-4" /> Nova Categoria
+        </Button>
+      </div>
+
+      <div className="border border-border bg-card/50">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nome</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Ordem</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {categories.map((c) => (
+              <TableRow key={c.slug}>
+                <TableCell className="font-medium">{c.name}</TableCell>
+                <TableCell className="text-muted-foreground">{c.slug}</TableCell>
+                <TableCell>{c.sort_order || 0}</TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => setEditing(c)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(c.slug)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
