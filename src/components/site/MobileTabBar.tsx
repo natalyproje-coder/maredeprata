@@ -25,7 +25,7 @@ export function MobileTabBar() {
       </Link>
       <Link
         to="/categoria/$slug"
-        params={{ slug: "lingerie" }}
+        params={{ slug: "todos" }}
         className="grid place-items-center gap-1 py-3 text-[0.55rem] tracking-[0.14em] text-muted-foreground uppercase"
         activeProps={{ className: "text-pearl" }}
       >
