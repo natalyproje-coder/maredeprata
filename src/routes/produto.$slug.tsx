@@ -175,23 +175,31 @@ function ProductPage() {
             {product.name}
           </h1>
 
-          <div className="mt-4 flex items-center gap-2">
-            <span className="flex" aria-label={`Avaliação ${product.rating} de 5`}>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                  key={index}
-                  className={cn(
-                    "h-3.5 w-3.5",
-                    index < Math.round(product.rating)
-                      ? "fill-gold text-gold"
-                      : "text-muted-foreground",
-                  )}
-                />
-              ))}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {product.rating} · {product.reviews} avaliações
-            </span>
+          <div className="mt-4 flex items-center gap-3">
+            {product.reviews > 0 ? (
+              <>
+                <span className="flex items-center gap-1" aria-label={`Avaliação ${product.rating} de 5`}>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star
+                      key={index}
+                      className={cn(
+                        "h-3.5 w-3.5",
+                        index < Math.round(product.rating)
+                          ? "fill-gold text-gold"
+                          : "text-muted-foreground",
+                      )}
+                    />
+                  ))}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {product.rating} · {product.reviews} avaliações
+                </span>
+              </>
+            ) : (
+              <span className="text-xs italic text-muted-foreground">
+                Seja a primeira pessoa a avaliar este produto
+              </span>
+            )}
           </div>
 
           <div className="mt-8 flex flex-wrap items-baseline gap-3">
