@@ -68,6 +68,7 @@ type SortKey = "relevantes" | "menor" | "maior" | "vendidos" | "recentes";
 
 function CategoryPage() {
   const { slug, name, description } = Route.useLoaderData();
+  const { products: allProducts, categories, content } = useCatalog();
   const searchParams = Route.useSearch();
   const query = (searchParams as any).q?.toLowerCase() || "";
 
