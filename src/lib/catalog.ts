@@ -86,6 +86,7 @@ export type Product = {
   description: string;
   details: { label: string; value: string }[];
   care: string;
+  stock_quantity: number;
 };
 
 export function applyCatalog(newProducts: Product[], newCategories: Category[]) {

@@ -30,6 +30,7 @@ import {
 import { useCatalog } from "@/lib/catalog-data";
 import { updateSiteContent, deleteProduct, upsertProduct } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
