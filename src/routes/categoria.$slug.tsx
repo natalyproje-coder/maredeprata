@@ -207,8 +207,9 @@ function CategoryPage() {
                 </button>
               ))}
             </div>
-          </FilterGroup>
-          {allColors.length > 0 && (
+            </FilterGroup>
+          )}
+          {relevantColors.length > 0 && (
             <FilterGroup title="Cor">
             {relevantColors.map((c) => (
               <FilterCheck
@@ -221,7 +222,7 @@ function CategoryPage() {
             ))}
             </FilterGroup>
           )}
-          {allMaterials.length > 0 && (
+          {relevantMaterials.length > 0 && (
             <FilterGroup title="Material">
             {relevantMaterials.map((m) => (
               <FilterCheck
