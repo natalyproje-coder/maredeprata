@@ -43,11 +43,11 @@ export function Header() {
           : "border-transparent bg-transparent",
       )}
     >
-      <p className="bg-secondary/60 py-2 text-center text-[0.6rem] tracking-[0.28em] text-silver uppercase">
-        Embalagem discreta · Frete grátis acima de R$ 399
+      <p className="bg-secondary/60 py-1.5 sm:py-2 text-center text-[0.55rem] sm:text-[0.6rem] tracking-[0.2em] sm:tracking-[0.28em] text-silver uppercase">
+        Embalagem discreta · Frete grátis +R$ 399
       </p>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         <button
           type="button"
           aria-label="Abrir menu"

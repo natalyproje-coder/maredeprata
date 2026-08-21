@@ -63,17 +63,17 @@ function Home() {
           </svg>
         </div>
 
-        <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col items-start justify-end px-4 pb-24 sm:justify-center sm:pb-0">
+        <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col items-start justify-end px-4 pb-28 sm:justify-center sm:pb-0">
           <div className="animate-rise max-w-2xl">
             <p className="eyebrow">{heroEyebrow}</p>
-            <h1 className="font-display mt-6 text-5xl leading-[0.95] tracking-[0.06em] text-silver-gradient sm:text-7xl lg:text-8xl">
+            <h1 className="font-display mt-6 text-4xl leading-[0.95] tracking-[0.04em] text-silver-gradient sm:text-7xl lg:text-8xl">
               {heroTitle}
             </h1>
             <p className="font-display mt-6 text-xl text-pearl/90 italic sm:text-2xl">
               “{heroSubtitle}”
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="tracking-[0.28em] uppercase">
+              <Button asChild size="lg" className="w-full sm:w-auto tracking-[0.2em] sm:tracking-[0.28em] uppercase">
                 <Link to="/categoria/$slug" params={{ slug: "novidades" }}>
                   {heroCta}
                 </Link>
@@ -82,7 +82,7 @@ function Home() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="tracking-[0.28em] uppercase"
+                className="w-full sm:w-auto tracking-[0.2em] sm:tracking-[0.28em] uppercase"
               >
                 <Link to="/categoria/$slug" params={{ slug: "semijoias" }}>
                   Ver semijoias
