@@ -349,7 +349,7 @@ function ProductsManager() {
                   <option value="">Nenhum</option>
                   <option value="lingerie">Lingerie (P/M/G/GG)</option>
                   <option value="jewelry">Joias (Aros 12-24)</option>
-                  <option value="clothing">Roupas de Cama (Solteiro/Casal/...)</option>
+                  <option value="bedding">Roupas de Cama (Solteiro/Casal/...)</option>
                 </select>
               </div>
               <div className="space-y-2">
