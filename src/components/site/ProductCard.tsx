@@ -119,7 +119,16 @@ export function ProductCard({ product }: { product: Product }) {
           ) : null}
           <span className="text-base text-pearl">{formatPrice(product.price)}</span>
         </div>
-        <span className="text-xs text-muted-foreground">
+        {product.reviews > 0 ? (
+          <span className="text-[0.65rem] text-muted-foreground">
+            {product.rating} · {product.reviews} avaliações
+          </span>
+        ) : (
+          <span className="text-[0.65rem] text-muted-foreground italic">
+            Seja a primeira a avaliar
+          </span>
+        )}
+        <span className="text-xs text-muted-foreground mt-1">
           {installments(product.price)}
         </span>
       </div>
