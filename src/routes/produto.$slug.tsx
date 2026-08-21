@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Heart, RefreshCw, ShieldCheck, Star, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/site/ProductCard";
@@ -137,7 +137,7 @@ function ProductPage() {
             />
           </div>
           <div className="mt-3 flex gap-3">
-            {product.images.map((src, index) => (
+            {product.images.map((src: string, index: number) => (
               <button
                 key={src}
                 type="button"

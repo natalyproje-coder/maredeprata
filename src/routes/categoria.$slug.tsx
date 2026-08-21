@@ -84,9 +84,9 @@ function CategoryPage() {
   const [colors, setColors] = useState<string[]>([]);
   const [materials, setMaterials] = useState<string[]>([]);
   const [cats, setCats] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState(700);
-  const [onlyStock, setOnlyStock] = useState(false);
-  const [onlyBest, setOnlyBest] = useState(false);
+  const [maxPrice, setMaxPrice] = useState<number>(700);
+  const [onlyStock, setOnlyStock] = useState<boolean>(false);
+  const [onlyBest, setOnlyBest] = useState<boolean>(false);
   const [sort, setSort] = useState<SortKey>("relevantes");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
