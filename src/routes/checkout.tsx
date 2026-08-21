@@ -115,12 +115,12 @@ function CheckoutPage() {
     const code = `MP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
     
     const shippingAddress = {
-      cep: formData.get("cep") as string,
-      end: formData.get("end") as string,
-      num: formData.get("num") as string,
-      comp: formData.get("comp") as string,
-      cidade: formData.get("cidade") as string,
-      uf: formData.get("uf") as string,
+      cep: (formData.get("cep") as string) || "",
+      end: (formData.get("end") as string) || "",
+      num: (formData.get("num") as string) || "",
+      comp: (formData.get("comp") as string) || "",
+      cidade: (formData.get("cidade") as string) || "",
+      uf: (formData.get("uf") as string) || "",
     };
 
     const items = detailed.map(item => ({
@@ -381,7 +381,7 @@ function Field({
   label: string;
   type?: string;
   required?: boolean;
-  value?: string | null;
+  value?: string | null | undefined;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
 }) {
@@ -395,7 +395,7 @@ function Field({
         name={id} 
         type={type} 
         required={required} 
-        value={value || ""} 
+        value={value ?? ""} 
         onChange={onChange}
         placeholder={placeholder}
       />
