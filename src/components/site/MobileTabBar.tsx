@@ -1,9 +1,13 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Heart, Home, LayoutGrid, ShoppingBag, User } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 export function MobileTabBar() {
   const { count, setCartOpen } = useStore();
+  const location = useLocation();
+
+  const isAdminPath = location.pathname.startsWith("/admin");
+  if (isAdminPath) return null;
 
   return (
     <nav

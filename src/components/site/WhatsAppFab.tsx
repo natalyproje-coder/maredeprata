@@ -1,9 +1,14 @@
 import { MessageCircle } from "lucide-react";
+import { useLocation } from "@tanstack/react-router";
 import { useSiteText } from "@/lib/catalog-data";
 
 export function WhatsAppFab() {
+  const location = useLocation();
   const whatsappNumber = useSiteText("whatsapp_number");
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre um produto da Maré de Prata.`;
+
+  const isAdminPath = location.pathname.startsWith("/admin");
+  if (isAdminPath) return null;
   
   return (
     <a
