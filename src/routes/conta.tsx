@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Heart, MapPin, Package, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -30,10 +31,60 @@ export const Route = createFileRoute("/conta")({
 
 function AccountPage() {
   const { favorites } = useStore();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"login" | "signup">("login");
-  const [logged, setLogged] = useState(false);
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!logged) {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("senha") as string;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Bem-vinda de volta!");
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("senha") as string;
+
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Conta criada! Verifique seu e-mail.");
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Até logo!");
+  };
+
+  if (loading) return <div className="p-20 text-center">Carregando...</div>;
+
+  if (!session) {
     return (
       <div className="mx-auto max-w-md px-4 py-20">
         <p className="eyebrow text-center">Área da cliente</p>
@@ -56,11 +107,7 @@ function AccountPage() {
 
         <form
           className="mt-8 space-y-5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setLogged(true);
-            toast.success("Bem-vinda de volta à Maré de Prata.");
-          }}
+          onSubmit={mode === "login" ? handleLogin : handleSignup}
         >
           {mode === "signup" ? (
             <div className="space-y-2">
@@ -70,11 +117,11 @@ function AccountPage() {
           ) : null}
           <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
-            <Input id="email" type="email" required />
+            <Input id="email" name="email" type="email" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="senha">Senha</Label>
-            <Input id="senha" type="password" required />
+            <Input id="senha" name="senha" type="password" required />
           </div>
           <Button type="submit" className="w-full">
             {mode === "login" ? "Entrar" : "Criar minha conta"}
@@ -91,7 +138,7 @@ function AccountPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-14">
       <p className="eyebrow">Minha conta</p>
-      <h1 className="font-display mt-3 text-4xl">Olá, bem-vinda</h1>
+      <h1 className="font-display mt-3 text-4xl">Olá, {session.user.email}</h1>
 
       <div className="mt-10 grid gap-6 md:grid-cols-3">
         <Card icon={Package} title="Pedidos">
@@ -112,9 +159,14 @@ function AccountPage() {
       </div>
 
       <div className="mt-10">
-        <Button variant="outline" onClick={() => setLogged(false)}>
+        <Button variant="outline" onClick={handleLogout}>
           <User className="mr-2 h-4 w-4" /> Sair
         </Button>
+        {session.user.email === "vivonirubens@gmail.com" && (
+          <Button className="ml-4" onClick={() => navigate({ to: "/admin" })}>
+            Painel Admin
+          </Button>
+        )}
       </div>
     </div>
   );
