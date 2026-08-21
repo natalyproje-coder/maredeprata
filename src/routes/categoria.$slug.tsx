@@ -36,7 +36,7 @@ const virtual: Record<string, { name: string; description: string }> = {
 export const Route = createFileRoute("/categoria/$slug")({
   validateSearch: (search: Record<string, unknown>) => ({
     q: (search.q as string) || undefined,
-  }),
+  }) as { q?: string },
   loader: ({ params }) => {
     const category = getCategory(params.slug);
     const meta = category
@@ -73,7 +73,7 @@ function CategoryPage() {
   const { slug, name, description } = Route.useLoaderData();
   const { products: allProducts, categories, content } = useCatalog();
   const searchParams = Route.useSearch();
-  const query = (searchParams as any).q?.toLowerCase() || "";
+  const query = searchParams.q?.toLowerCase() || "";
 
   const base = useMemo(() => {
     let filtered = [...allProducts];
