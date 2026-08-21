@@ -64,16 +64,17 @@ function CheckoutPage() {
           .single();
         if (data) {
           setProfile(data);
+          const address = data.address as any;
           setValues({
             nome: data.full_name || "",
             email: session.user.email || "",
             tel: data.phone || "",
-            cep: data.address?.cep || "",
-            end: data.address?.end || "",
-            num: data.address?.num || "",
-            comp: data.address?.comp || "",
-            cidade: data.address?.cidade || "",
-            uf: data.address?.uf || "",
+            cep: address?.cep || "",
+            end: address?.end || "",
+            num: address?.num || "",
+            comp: address?.comp || "",
+            cidade: address?.cidade || "",
+            uf: address?.uf || "",
           });
         }
       }
@@ -235,22 +236,22 @@ function CheckoutPage() {
           <section>
             <h2 className="font-display text-xl">Identificação</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field id="nome" label="Nome completo" defaultValue={profile?.full_name} required />
-              <Field id="email" label="E-mail" type="email" defaultValue={profile?.email} required />
-              <Field id="cpf" label="CPF" required />
-              <Field id="tel" label="Celular / WhatsApp" defaultValue={profile?.phone} required />
+              <Field id="nome" label="Nome completo" value={values.nome} onChange={(e) => handleInputChange("nome", e.target.value)} required />
+              <Field id="email" label="E-mail" type="email" value={values.email} onChange={(e) => handleInputChange("email", e.target.value)} required />
+              <Field id="cpf" label="CPF" value={values.cpf} onChange={(e) => handleInputChange("cpf", e.target.value)} placeholder="000.000.000-00" required />
+              <Field id="tel" label="Celular / WhatsApp" value={values.tel} onChange={(e) => handleInputChange("tel", e.target.value)} placeholder="(12) 99999-9999" required />
             </div>
           </section>
 
           <section>
             <h2 className="font-display text-xl">Entrega</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field id="cep" label="CEP" defaultValue={profile?.address?.cep} required />
-              <Field id="end" label="Endereço" defaultValue={profile?.address?.end} required />
-              <Field id="num" label="Número" defaultValue={profile?.address?.num} required />
-              <Field id="comp" label="Complemento" defaultValue={profile?.address?.comp} />
-              <Field id="cidade" label="Cidade" defaultValue={profile?.address?.cidade} required />
-              <Field id="uf" label="Estado" defaultValue={profile?.address?.uf} required />
+              <Field id="cep" label="CEP" value={values.cep} onChange={(e) => handleInputChange("cep", e.target.value)} placeholder="00000-000" required />
+              <Field id="end" label="Endereço" value={values.end} onChange={(e) => handleInputChange("end", e.target.value)} required />
+              <Field id="num" label="Número" value={values.num} onChange={(e) => handleInputChange("num", e.target.value)} required />
+              <Field id="comp" label="Complemento" value={values.comp} onChange={(e) => handleInputChange("comp", e.target.value)} />
+              <Field id="cidade" label="Cidade" value={values.cidade} onChange={(e) => handleInputChange("cidade", e.target.value)} required />
+              <Field id="uf" label="Estado" value={values.uf} onChange={(e) => handleInputChange("uf", e.target.value)} required />
             </div>
             <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-silver" />
@@ -283,10 +284,10 @@ function CheckoutPage() {
             </div>
             {method === "card" ? (
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <Field id="cardnum" label="Número do cartão" required />
-                <Field id="cardname" label="Nome impresso" required />
-                <Field id="cardval" label="Validade (MM/AA)" required />
-                <Field id="cardcvv" label="CVV" required />
+                <Field id="cardnum" label="Número do cartão" value={values.cardnum} onChange={(e) => handleInputChange("cardnum", e.target.value)} required />
+                <Field id="cardname" label="Nome impresso" value={values.cardname} onChange={(e) => handleInputChange("cardname", e.target.value)} required />
+                <Field id="cardval" label="Validade (MM/AA)" value={values.cardval} onChange={(e) => handleInputChange("cardval", e.target.value)} required />
+                <Field id="cardcvv" label="CVV" value={values.cardcvv} onChange={(e) => handleInputChange("cardcvv", e.target.value)} required />
               </div>
             ) : null}
           </section>
