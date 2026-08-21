@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          items: Json
+          order_number: string
+          shipping_address: Json
+          status: string | null
+          total_amount: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          items: Json
+          order_number: string
+          shipping_address: Json
+          status?: string | null
+          total_amount: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          items?: Json
+          order_number?: string
+          shipping_address?: Json
+          status?: string | null
+          total_amount?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           badge: string | null
@@ -71,6 +113,7 @@ export type Database = {
           sizes: string[]
           slug: string
           sort_order: number
+          stock_quantity: number | null
         }
         Insert: {
           badge?: string | null
@@ -95,6 +138,7 @@ export type Database = {
           sizes?: string[]
           slug: string
           sort_order?: number
+          stock_quantity?: number | null
         }
         Update: {
           badge?: string | null
@@ -119,6 +163,31 @@ export type Database = {
           sizes?: string[]
           slug?: string
           sort_order?: number
+          stock_quantity?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: Json | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: Json | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: Json | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
