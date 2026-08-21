@@ -362,6 +362,20 @@ function ProductPage() {
                 </dl>
               </AccordionContent>
             </AccordionItem>
+            
+            {product.meta?.safety_info && (
+              <AccordionItem value="seguranca">
+                <AccordionTrigger className="text-xs tracking-[0.2em] uppercase">
+                  {isSexyShop ? "Modo de Uso e Cuidados" : "Segurança e Garantia"}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+                    {product.meta.safety_info}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
             {sizeChartType !== "none" && (
               <AccordionItem value="medidas">
                 <AccordionTrigger className="text-xs tracking-[0.2em] uppercase">
