@@ -68,7 +68,7 @@ type SortKey = "relevantes" | "menor" | "maior" | "vendidos" | "recentes";
 
 function CategoryPage() {
   const { slug, name, description } = Route.useLoaderData();
-  const { products: allProducts, categories } = useCatalog();
+  const { products: allProducts, categories, content } = useCatalog();
 
   const base = useMemo(() => {
     if (slug === "novidades") {
@@ -79,6 +79,28 @@ function CategoryPage() {
     }
     return allProducts.filter((p) => p.category === slug);
   }, [allProducts, slug]);
+
+  const isJewelry = slug === "semijoias";
+  const isBedding = slug === "cama-banho";
+  const isLingerie = slug === "lingerie" || slug === "moda-intima";
+  const isSexyShop = slug === "sexy-shop";
+
+  const isSpecial = slug === "novidades" || slug === "ofertas";
+  
+  const relevantSizes = useMemo(() => {
+    if (isSpecial) return allSizes;
+    return Array.from(new Set(base.flatMap(p => p.sizes)));
+  }, [base, isSpecial]);
+
+  const relevantColors = useMemo(() => {
+    if (isSpecial) return allColors;
+    return Array.from(new Set(base.flatMap(p => p.colors)));
+  }, [base, isSpecial]);
+
+  const relevantMaterials = useMemo(() => {
+    if (isSpecial) return allMaterials;
+    return Array.from(new Set(base.map(p => p.material)));
+  }, [base, isSpecial]);
 
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
@@ -152,7 +174,7 @@ function CategoryPage() {
           </FilterGroup>
           <FilterGroup title="Tamanho">
             <div className="flex flex-wrap gap-2">
-              {allSizes.map((s) => (
+              {relevantSizes.map((s) => (
                 <button
                   key={s}
                   type="button"
@@ -169,8 +191,9 @@ function CategoryPage() {
               ))}
             </div>
           </FilterGroup>
-          <FilterGroup title="Cor">
-            {allColors.map((c) => (
+          {allColors.length > 0 && (
+            <FilterGroup title="Cor">
+            {relevantColors.map((c) => (
               <FilterCheck
                 key={c}
                 id={`color-${c}`}
@@ -179,9 +202,11 @@ function CategoryPage() {
                 onChange={() => toggle(c, colors, setColors)}
               />
             ))}
-          </FilterGroup>
-          <FilterGroup title="Material">
-            {allMaterials.map((m) => (
+            </FilterGroup>
+          )}
+          {allMaterials.length > 0 && (
+            <FilterGroup title="Material">
+            {relevantMaterials.map((m) => (
               <FilterCheck
                 key={m}
                 id={`mat-${m}`}
@@ -190,7 +215,8 @@ function CategoryPage() {
                 onChange={() => toggle(m, materials, setMaterials)}
               />
             ))}
-          </FilterGroup>
+            </FilterGroup>
+          )}
           <FilterGroup title="Preço até">
             <Slider
               value={[maxPrice]}

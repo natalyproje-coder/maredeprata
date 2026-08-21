@@ -98,6 +98,13 @@ function ProductPage() {
 
   const favorite = isFavorite(product.slug);
   const isJewelry = product.category === "semijoias";
+  const isBedding = product.category === "cama-banho";
+  const isLingerie = product.category === "lingerie" || product.category === "moda-intima";
+  const isSexyShop = product.category === "sexy-shop";
+
+  const sizeChartType = product.meta?.size_chart_type || 
+    (isJewelry ? "jewelry" : isBedding ? "bedding" : isLingerie ? "lingerie" : "none");
+
   const discount = product.compareAt
     ? Math.round((1 - product.price / product.compareAt) * 100)
     : 0;
@@ -334,7 +341,7 @@ function ProductPage() {
           <Accordion type="single" collapsible className="mt-8">
             <AccordionItem value="detalhes">
               <AccordionTrigger className="text-xs tracking-[0.2em] uppercase">
-                {isJewelry ? "Material e acabamento" : "Composição e tecido"}
+                {isJewelry ? "Material e acabamento" : isSexyShop ? "Conteúdo e Composição" : "Composição e tecido"}
               </AccordionTrigger>
               <AccordionContent>
                 <dl className="space-y-2 text-sm">
@@ -347,50 +354,65 @@ function ProductPage() {
                 </dl>
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="medidas">
-              <AccordionTrigger className="text-xs tracking-[0.2em] uppercase">
-                Tabela de medidas
-              </AccordionTrigger>
-              <AccordionContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tamanho</TableHead>
-                      <TableHead>{isJewelry ? "Circunferência" : "Busto"}</TableHead>
-                      <TableHead>{isJewelry ? "Comprimento" : "Cintura"}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {(isJewelry
-                      ? [
-                          ["14", "4,7 cm", "45 cm"],
-                          ["16", "5,1 cm", "45 cm"],
-                          ["18", "5,5 cm", "50 cm"],
-                          ["Único", "Ajustável", "45–50 cm"],
-                        ]
-                      : [
-                          ["P", "82–86 cm", "62–66 cm"],
-                          ["M", "87–91 cm", "67–71 cm"],
-                          ["G", "92–97 cm", "72–77 cm"],
-                          ["GG", "98–104 cm", "78–84 cm"],
-                        ]
-                    ).map((row) => (
-                      <TableRow key={row[0]}>
-                        <TableCell>{row[0]}</TableCell>
-                        <TableCell>{row[1]}</TableCell>
-                        <TableCell>{row[2]}</TableCell>
+            {sizeChartType !== "none" && (
+              <AccordionItem value="medidas">
+                <AccordionTrigger className="text-xs tracking-[0.2em] uppercase">
+                  Tabela de medidas
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Tamanho</TableHead>
+                        <TableHead>{sizeChartType === "jewelry" ? "Circunferência" : "Busto / Tórax"}</TableHead>
+                        <TableHead>{sizeChartType === "jewelry" ? "Comprimento" : "Cintura / Quadril"}</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </AccordionContent>
-            </AccordionItem>
+                    </TableHeader>
+                    <TableBody>
+                      {(sizeChartType === "jewelry"
+                        ? [
+                            ["14", "4,7 cm", "45 cm"],
+                            ["16", "5,1 cm", "45 cm"],
+                            ["18", "5,5 cm", "50 cm"],
+                            ["Único", "Ajustável", "45–50 cm"],
+                          ]
+                        : sizeChartType === "bedding"
+                        ? [
+                            ["Solteiro", "188 x 88 cm", "1 peça"],
+                            ["Casal", "188 x 138 cm", "4 peças"],
+                            ["Queen", "198 x 158 cm", "4 peças"],
+                            ["King", "203 x 193 cm", "4 peças"],
+                          ]
+                        : [
+                            ["P", "82–86 cm", "62–66 cm"],
+                            ["M", "87–91 cm", "67–71 cm"],
+                            ["G", "92–97 cm", "72–77 cm"],
+                            ["GG", "98–104 cm", "78–84 cm"],
+                          ]
+                      ).map((row) => (
+                        <TableRow key={row[0]}>
+                          <TableCell>{row[0]}</TableCell>
+                          <TableCell>{row[1]}</TableCell>
+                          <TableCell>{row[2]}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </AccordionContent>
+              </AccordionItem>
+            )}
             <AccordionItem value="cuidados">
               <AccordionTrigger className="text-xs tracking-[0.2em] uppercase">
-                {isJewelry ? "Cuidados com a peça" : "Instruções de lavagem"}
+                {isJewelry ? "Cuidados com a peça" : isSexyShop ? "Modo de uso e segurança" : "Instruções de lavagem"}
               </AccordionTrigger>
               <AccordionContent className="text-sm text-muted-foreground">
                 {product.care}
+                {isSexyShop && product.meta?.safety_info && (
+                  <p className="mt-2 pt-2 border-t border-border/50">{product.meta.safety_info}</p>
+                )}
+                {isSexyShop && product.meta?.usage_instructions && (
+                  <p className="mt-2 pt-2 border-t border-border/50">{product.meta.usage_instructions}</p>
+                )}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="trocas">
