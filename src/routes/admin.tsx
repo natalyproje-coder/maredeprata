@@ -251,7 +251,7 @@ function ProductsManager() {
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(p.slug)}>
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" /> deletar
                     </Button>
                   </div>
                 </TableCell>
