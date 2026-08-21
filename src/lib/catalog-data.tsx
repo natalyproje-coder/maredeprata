@@ -42,22 +42,19 @@ type ProductRow = {
 };
 
 export function rowToProduct(row: ProductRow): Product {
-  return {
+  const product: Product = {
     slug: row.slug,
     name: row.name,
     category: row.category as CategorySlug,
     categoryName: row.category_name,
     price: Number(row.price),
-    ...(row.compare_at != null ? { compareAt: Number(row.compare_at) } : {}),
     images: row.images?.length ? row.images : ["/img/cat-lingerie.jpg"],
-    ...(row.badge ? { badge: row.badge as Product["badge"] } : {}),
     rating: Number(row.rating),
     reviews: row.reviews,
     colors: row.colors ?? [],
     sizes: row.sizes ?? [],
     material: row.material,
     inStock: row.in_stock,
-    bestseller: row.bestseller,
     createdAt: row.created_on,
     description: row.description,
     details: Array.isArray(row.details)
@@ -65,6 +62,18 @@ export function rowToProduct(row: ProductRow): Product {
       : [],
     care: row.care,
   };
+
+  if (row.compare_at != null) {
+    product.compareAt = Number(row.compare_at);
+  }
+  if (row.badge) {
+    product.badge = row.badge as Product["badge"];
+  }
+  if (row.bestseller) {
+    product.bestseller = row.bestseller;
+  }
+
+  return product;
 }
 
 export type Catalog = {

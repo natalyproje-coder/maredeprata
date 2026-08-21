@@ -88,6 +88,13 @@ export type Product = {
   care: string;
 };
 
+export function applyCatalog(newProducts: Product[], newCategories: Category[]) {
+  products.length = 0;
+  products.push(...newProducts);
+  categories.length = 0;
+  categories.push(...newCategories);
+}
+
 const lingerieSizes = ["P", "M", "G", "GG"];
 const joiaSizes = ["14", "16", "18", "Único"];
 
