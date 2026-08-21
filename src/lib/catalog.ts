@@ -87,6 +87,15 @@ export type Product = {
   details: { label: string; value: string }[];
   care: string;
   stock_quantity: number;
+  meta?: {
+    wash_instructions?: string;
+    size_chart_type?: "lingerie" | "jewelry" | "bedding" | "none";
+    usage_instructions?: string;
+    safety_info?: string;
+    volume?: string;
+    ingredients?: string;
+    warranty_months?: number;
+  };
 };
 
 export function applyCatalog(newProducts: Product[], newCategories: Category[]) {

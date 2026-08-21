@@ -47,6 +47,7 @@ type ProductRow = {
   details: unknown;
   care: string;
   stock_quantity: number;
+  meta: any;
 };
 
 export function rowToProduct(row: ProductRow): Product {
@@ -70,6 +71,7 @@ export function rowToProduct(row: ProductRow): Product {
       : [],
     care: row.care,
     stock_quantity: row.stock_quantity || 0,
+    meta: row.meta || {},
   };
 
   if (row.compare_at != null) {
