@@ -49,11 +49,15 @@ export const upsertProduct = createServerFn({ method: "POST" })
 export const createOrder = createServerFn({ method: "POST" })
   .inputValidator((data) => z.any().parse(data))
   .handler(async ({ data }) => {
+    // We allow anonymous orders but try to associate user if present
     const { error } = await supabase
       .from("orders")
       .insert(data);
     
-    if (error) throw error;
+    if (error) {
+      console.error("Error creating order:", error);
+      throw new Error(`Failed to create order: ${error.message}`);
+    }
     return { success: true };
   });
 
@@ -71,6 +75,42 @@ export const updateProfile = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString()
       });
     
-    if (error) throw error;
+    if (error) {
+      console.error("Error updating profile:", error);
+      throw error;
+    }
+    return { success: true };
+  });
+
+export const upsertCategory = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((data) => z.any().parse(data))
+  .handler(async ({ data }) => {
+    const { error } = await supabase
+      .from("categories")
+      .upsert(data);
+    
+    if (error) {
+      console.error("Error upserting category:", error);
+      throw error;
+    }
+    return { success: true };
+  });
+
+export const deleteCategory = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((data) => z.object({
+    slug: z.string(),
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("slug", data.slug);
+    
+    if (error) {
+      console.error("Error deleting category:", error);
+      throw error;
+    }
     return { success: true };
   });

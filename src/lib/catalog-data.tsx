@@ -104,12 +104,13 @@ export async function fetchCatalog(): Promise<Catalog> {
     ? (prod.data as unknown as ProductRow[]).map(rowToProduct)
     : staticProducts;
   const categories = cats.data?.length
-    ? (cats.data as unknown as Category[]).map((c) => ({
+    ? (cats.data as any[]).map((c) => ({
         slug: c.slug,
         name: c.name,
         tagline: c.tagline,
         description: c.description,
         image: c.image,
+        sort_order: c.sort_order,
       }))
     : staticCategories;
   const content: ContentMap = { ...defaultContent };
