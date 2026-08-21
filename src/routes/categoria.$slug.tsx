@@ -70,15 +70,30 @@ function CategoryPage() {
   const { slug, name, description } = Route.useLoaderData();
   const { products: allProducts, categories, content } = useCatalog();
 
+  const search = Route.useSearch<{ q?: string }>();
+  const query = search.q?.toLowerCase() || "";
+
   const base = useMemo(() => {
+    let filtered = [...allProducts];
+    
     if (slug === "novidades") {
-      return [...allProducts].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      filtered = filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    } else if (slug === "ofertas") {
+      filtered = filtered.filter((p) => p.compareAt);
+    } else {
+      filtered = filtered.filter((p) => p.category === slug);
     }
-    if (slug === "ofertas") {
-      return allProducts.filter((p) => p.compareAt);
+
+    if (query) {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        p.description.toLowerCase().includes(query) ||
+        p.material.toLowerCase().includes(query)
+      );
     }
-    return allProducts.filter((p) => p.category === slug);
-  }, [allProducts, slug]);
+
+    return filtered;
+  }, [allProducts, slug, query]);
 
   const isJewelry = slug === "semijoias";
   const isBedding = slug === "cama-banho";
