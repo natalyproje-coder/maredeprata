@@ -91,7 +91,7 @@ function CategoryPage() {
       filtered = filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     } else if (slug === "ofertas") {
       filtered = filtered.filter((p) => p.compareAt);
-    } else {
+    } else if (slug !== "todos") {
       filtered = filtered.filter((p) => p.category === slug);
     }
 

@@ -86,7 +86,9 @@ export function ProductCard({ product }: { product: Product }) {
             size="sm"
             className="w-full tracking-[0.2em] uppercase"
             disabled={!product.inStock}
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               addItem({
                 slug: product.slug,
                 size: product.sizes[0] ?? "Único",
