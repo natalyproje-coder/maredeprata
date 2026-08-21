@@ -441,20 +441,22 @@ export function getCategory(slug: string) {
   return categories.find((c) => c.slug === slug);
 }
 
-export function productsByCategory(slug: string) {
+export function productsByCategory(slug: string, allProducts: Product[]) {
   if (slug === "novidades") {
-    return [...products].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return [...allProducts].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
   if (slug === "ofertas") {
-    return products.filter((p) => p.compareAt);
+    return allProducts.filter((p) => p.compareAt);
   }
-  return products.filter((p) => p.category === slug);
+  if (slug === "todos") {
+    return allProducts;
+  }
+  return allProducts.filter((p) => p.category === slug);
 }
 
-export function relatedProducts(product: Product) {
-  return products
+export function relatedProducts(product: Product, allProducts: Product[]) {
+  return allProducts
     .filter((p) => p.slug !== product.slug && p.category === product.category)
-    .concat(products.filter((p) => p.category !== product.category))
     .slice(0, 4);
 }
 

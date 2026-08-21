@@ -86,7 +86,9 @@ export function ProductCard({ product }: { product: Product }) {
             size="sm"
             className="w-full tracking-[0.2em] uppercase"
             disabled={!product.inStock}
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               addItem({
                 slug: product.slug,
                 size: product.sizes[0] ?? "Único",
@@ -121,7 +123,7 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         {product.reviews > 0 ? (
           <span className="text-[0.65rem] text-muted-foreground">
-            {product.rating} · {product.reviews} avaliações
+            {product.rating} · {product.reviews} {product.reviews === 1 ? 'avaliação' : 'avaliações'}
           </span>
         ) : (
           <span className="text-[0.65rem] text-muted-foreground italic">

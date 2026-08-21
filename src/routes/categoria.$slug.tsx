@@ -1,6 +1,6 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,11 +14,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  allColors,
-  allMaterials,
-  allSizes,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
+import {
   getCategory,
-  productsByCategory,
 } from "@/lib/catalog";
 import { useCatalog } from "@/lib/catalog-data";
 
@@ -30,6 +35,10 @@ const virtual: Record<string, { name: string; description: string }> = {
   ofertas: {
     name: "Ofertas",
     description: "Seleção com preço especial enquanto durarem os estoques.",
+  },
+  todos: {
+    name: "Busca",
+    description: "Resultados da sua pesquisa em todo o nosso catálogo.",
   },
 };
 
@@ -71,7 +80,7 @@ type SortKey = "relevantes" | "menor" | "maior" | "vendidos" | "recentes";
 
 function CategoryPage() {
   const { slug, name, description } = Route.useLoaderData();
-  const { products: allProducts, categories, content } = useCatalog();
+  const { products: allProducts, categories } = useCatalog();
   const searchParams = Route.useSearch();
   const query = searchParams.q?.toLowerCase() || "";
 
@@ -82,7 +91,7 @@ function CategoryPage() {
       filtered = filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     } else if (slug === "ofertas") {
       filtered = filtered.filter((p) => p.compareAt);
-    } else {
+    } else if (slug !== "todos") {
       filtered = filtered.filter((p) => p.category === slug);
     }
 
@@ -98,36 +107,20 @@ function CategoryPage() {
   }, [allProducts, slug, query]);
 
   const isJewelry = slug === "semijoias";
-  const isBedding = slug === "cama-banho";
-  const isLingerie = slug === "lingerie" || slug === "moda-intima";
   const isSexyShop = slug === "sexy-shop";
-
-  const isSpecial = slug === "novidades" || slug === "ofertas";
   
-  const relevantSizes = useMemo(() => {
-    if (isSpecial) return allSizes;
-    return Array.from(new Set(base.flatMap(p => p.sizes)));
-  }, [base, isSpecial]);
-
-  const relevantColors = useMemo(() => {
-    if (isSpecial) return allColors;
-    return Array.from(new Set(base.flatMap(p => p.colors)));
-  }, [base, isSpecial]);
-
-  const relevantMaterials = useMemo(() => {
-    if (isSpecial) return allMaterials;
-    return Array.from(new Set(base.map(p => p.material)));
-  }, [base, isSpecial]);
+  // Contextual Filters logic: Only show options that exist in the current products
+  const relevantSizes = useMemo(() => Array.from(new Set(base.flatMap(p => p.sizes))).sort(), [base]);
+  const relevantColors = useMemo(() => Array.from(new Set(base.flatMap(p => p.colors))).sort(), [base]);
+  const relevantMaterials = useMemo(() => Array.from(new Set(base.map(p => p.material))).sort(), [base]);
 
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
   const [materials, setMaterials] = useState<string[]>([]);
-  const [cats, setCats] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState<number>(700);
+  const [maxPrice, setMaxPrice] = useState<number>(1200);
   const [onlyStock, setOnlyStock] = useState<boolean>(false);
   const [onlyBest, setOnlyBest] = useState<boolean>(false);
   const [sort, setSort] = useState<SortKey>("relevantes");
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const toggle = (
     value: string,
@@ -140,9 +133,8 @@ function CategoryPage() {
       if (sizes.length && !p.sizes.some((s) => sizes.includes(s))) return false;
       if (colors.length && !p.colors.some((c) => colors.includes(c))) return false;
       if (materials.length && !materials.includes(p.material)) return false;
-      if (cats.length && !cats.includes(p.category)) return false;
       if (p.price > maxPrice) return false;
-      if (onlyStock && !p.inStock) return false;
+      if (onlyStock && p.stock_quantity <= 0) return false;
       if (onlyBest && !p.bestseller) return false;
       return true;
     });
@@ -153,137 +145,193 @@ function CategoryPage() {
     if (sort === "vendidos") list.sort((a, b) => b.reviews - a.reviews);
     if (sort === "recentes") list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return list;
-  }, [base, sizes, colors, materials, cats, maxPrice, onlyStock, onlyBest, sort]);
+  }, [base, sizes, colors, materials, maxPrice, onlyStock, onlyBest, sort]);
+
+  const clearFilters = () => {
+    setSizes([]);
+    setColors([]);
+    setMaterials([]);
+    setMaxPrice(1200);
+    setOnlyStock(false);
+    setOnlyBest(false);
+  };
+
+  const FilterContent = () => (
+    <div className="space-y-8">
+      {relevantSizes.length > 0 && (
+        <FilterGroup title={isJewelry ? "Aro / Tamanho" : "Tamanho"}>
+          <div className="flex flex-wrap gap-2">
+            {relevantSizes.map((s) => (
+              <button
+                key={s}
+                type="button"
+                aria-pressed={sizes.includes(s)}
+                onClick={() => toggle(s, sizes, setSizes)}
+                className={`border px-3 py-1.5 text-xs transition-colors ${
+                  sizes.includes(s)
+                    ? "border-silver bg-secondary text-pearl"
+                    : "border-border text-muted-foreground hover:text-pearl"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </FilterGroup>
+      )}
+      {relevantColors.length > 0 && (
+        <FilterGroup title="Cor">
+        {relevantColors.map((c) => (
+          <FilterCheck
+            key={c}
+            id={`color-${c}`}
+            label={c}
+            checked={colors.includes(c)}
+            onChange={() => toggle(c, colors, setColors)}
+          />
+        ))}
+        </FilterGroup>
+      )}
+      {relevantMaterials.length > 0 && (
+        <FilterGroup title="Material">
+        {relevantMaterials.map((m) => (
+          <FilterCheck
+            key={m}
+            id={`mat-${m}`}
+            label={m}
+            checked={materials.includes(m)}
+            onChange={() => toggle(m, materials, setMaterials)}
+          />
+        ))}
+        </FilterGroup>
+      )}
+      <FilterGroup title="Preço até">
+        <Slider
+          value={[maxPrice]}
+          min={50}
+          max={1200}
+          step={10}
+          onValueChange={(value) => setMaxPrice(value[0] ?? 1200)}
+          aria-label="Preço máximo"
+        />
+        <p className="mt-3 text-xs text-muted-foreground">
+          Até R$ {maxPrice.toLocaleString("pt-BR")}
+        </p>
+      </FilterGroup>
+      <FilterGroup title="Disponibilidade">
+        <FilterCheck
+          id="stock"
+          label="Em estoque"
+          checked={onlyStock}
+          onChange={() => setOnlyStock((v) => !v)}
+        />
+        <FilterCheck
+          id="best"
+          label="Mais vendidos"
+          checked={onlyBest}
+          onChange={() => setOnlyBest((v) => !v)}
+        />
+      </FilterGroup>
+      
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full text-xs text-muted-foreground"
+        onClick={clearFilters}
+      >
+        Limpar todos os filtros
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:py-12">
       <nav aria-label="Você está em" className="text-[0.6rem] tracking-[0.24em] text-muted-foreground uppercase">
-        Início / {name}
+        <Link to="/" className="hover:text-pearl">Início</Link> / {name}
       </nav>
       <header className="mt-4 max-w-2xl">
-        <h1 className="font-display text-4xl tracking-[0.06em] uppercase sm:text-5xl">
+        <h1 className="font-display text-3xl tracking-[0.06em] uppercase sm:text-5xl">
           {name}
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{description}</p>
       </header>
 
-      <div className="hairline my-10" />
+      <div className="hairline my-8 sm:my-10" />
 
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 lg:hidden">
-        <Button variant="outline" onClick={() => setFiltersOpen((o) => !o)}>
-          <SlidersHorizontal className="h-4 w-4" /> Filtros
-        </Button>
-        <SortSelect value={sort} onChange={setSort} />
+      {/* Mobile Actions */}
+      <div className="flex items-center gap-3 lg:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="flex-1 h-11">
+              <SlidersHorizontal className="h-4 w-4 mr-2" /> Filtrar
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[80vh] overflow-y-auto rounded-t-2xl">
+            <SheetHeader className="border-b pb-4 mb-4">
+              <SheetTitle className="text-left font-display uppercase tracking-widest">Filtros</SheetTitle>
+            </SheetHeader>
+            <FilterContent />
+            <SheetFooter className="mt-8 pb-8">
+              <SheetClose asChild>
+                <Button className="w-full h-12 uppercase tracking-widest">Aplicar Filtros</Button>
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+        <div className="flex-1">
+          <SortSelect value={sort} onChange={setSort} />
+        </div>
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <aside className={`${filtersOpen ? "block" : "hidden"} lg:block`}>
-          <FilterGroup title="Categoria">
-            {categories.map((c) => (
-              <FilterCheck
-                key={c.slug}
-                id={`cat-${c.slug}`}
-                label={c.name}
-                checked={cats.includes(c.slug)}
-                onChange={() => toggle(c.slug, cats, setCats)}
-              />
-            ))}
-          </FilterGroup>
-          {relevantSizes.length > 0 && (
-            <FilterGroup title={isJewelry ? "Aro / Tamanho" : "Tamanho"}>
-              <div className="flex flex-wrap gap-2">
-                {relevantSizes.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    aria-pressed={sizes.includes(s)}
-                    onClick={() => toggle(s, sizes, setSizes)}
-                    className={`border px-3 py-1.5 text-xs transition-colors ${
-                      sizes.includes(s)
-                        ? "border-silver bg-secondary text-pearl"
-                        : "border-border text-muted-foreground hover:text-pearl"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </FilterGroup>
-          )}
-          {relevantColors.length > 0 && (
-            <FilterGroup title="Cor">
-            {relevantColors.map((c) => (
-              <FilterCheck
-                key={c}
-                id={`color-${c}`}
-                label={c}
-                checked={colors.includes(c)}
-                onChange={() => toggle(c, colors, setColors)}
-              />
-            ))}
-            </FilterGroup>
-          )}
-          {relevantMaterials.length > 0 && (
-            <FilterGroup title="Material">
-            {relevantMaterials.map((m) => (
-              <FilterCheck
-                key={m}
-                id={`mat-${m}`}
-                label={m}
-                checked={materials.includes(m)}
-                onChange={() => toggle(m, materials, setMaterials)}
-              />
-            ))}
-            </FilterGroup>
-          )}
-          <FilterGroup title="Preço até">
-            <Slider
-              value={[maxPrice]}
-              min={50}
-              max={800}
-              step={10}
-              onValueChange={(value) => setMaxPrice(value[0] ?? 800)}
-              aria-label="Preço máximo"
-            />
-            <p className="mt-3 text-xs text-muted-foreground">
-              Até R$ {maxPrice.toLocaleString("pt-BR")}
-            </p>
-          </FilterGroup>
-          <FilterGroup title="Outros">
-            <FilterCheck
-              id="stock"
-              label="Disponível em estoque"
-              checked={onlyStock}
-              onChange={() => setOnlyStock((v) => !v)}
-            />
-            <FilterCheck
-              id="best"
-              label="Mais vendidos"
-              checked={onlyBest}
-              onChange={() => setOnlyBest((v) => !v)}
-            />
-          </FilterGroup>
+        {/* Desktop Sidebar */}
+        <aside className="hidden lg:block space-y-2">
+          <FilterContent />
         </aside>
 
         <section>
-          <div className="hidden grid-cols-[minmax(0,1fr)_auto] items-center gap-4 lg:grid">
+          <div className="hidden grid-cols-[minmax(0,1fr)_auto] items-center gap-4 lg:grid mb-8">
             <p className="text-xs text-muted-foreground">
-              {filtered.length} peça{filtered.length === 1 ? "" : "s"}
+              {filtered.length} {filtered.length === 1 ? "peça encontrada" : "peças encontradas"}
             </p>
             <SortSelect value={sort} onChange={setSort} />
           </div>
 
           {filtered.length === 0 ? (
-            <p className="py-24 text-center text-sm text-muted-foreground">
-              Nenhuma peça encontrada com esses filtros.
-            </p>
+            <div className="py-24 text-center">
+              <p className="text-sm text-muted-foreground">
+                {base.length === 0 
+                  ? "Em breve teremos novidades nesta categoria."
+                  : "Nenhuma peça encontrada com esses filtros."
+                }
+              </p>
+              {filtered.length !== base.length && (
+                <Button variant="link" onClick={clearFilters} className="mt-2 text-pearl">
+                  Limpar filtros
+                </Button>
+              )}
+            </div>
           ) : (
-            <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-3">
               {filtered.map((product) => (
                 <ProductCard key={product.slug} product={product} />
               ))}
             </div>
           )}
+
+          {/* Cross-navigation section */}
+          <div className="mt-20 border-t border-border pt-12">
+            <h2 className="eyebrow text-center mb-8">Explore outras categorias</h2>
+            <div className="flex flex-wrap justify-center gap-4">
+              {categories.filter(c => c.slug !== slug).map(c => (
+                <Button key={c.slug} variant="outline" asChild className="rounded-full">
+                  <Link to="/categoria/$slug" params={{ slug: c.slug }}>
+                    {c.name}
+                  </Link>
+                </Button>
+              ))}
+            </div>
+          </div>
         </section>
       </div>
     </div>
@@ -299,15 +347,15 @@ function SortSelect({
 }) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as SortKey)}>
-      <SelectTrigger className="w-[190px]" aria-label="Ordenar por">
-        <SelectValue />
+      <SelectTrigger className="w-full lg:w-[190px] h-11 lg:h-9" aria-label="Ordenar por">
+        <SelectValue placeholder="Ordenar por" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="relevantes">Mais relevantes</SelectItem>
         <SelectItem value="menor">Menor preço</SelectItem>
         <SelectItem value="maior">Maior preço</SelectItem>
         <SelectItem value="vendidos">Mais vendidos</SelectItem>
-        <SelectItem value="recentes">Mais recentes</SelectItem>
+        <SelectItem value="recentes">Lançamentos</SelectItem>
       </SelectContent>
     </Select>
   );
@@ -315,9 +363,9 @@ function SortSelect({
 
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border-b border-border py-6 first:pt-0">
-      <h2 className="eyebrow">{title}</h2>
-      <div className="mt-4 space-y-3">{children}</div>
+    <div className="py-2">
+      <h2 className="text-[0.65rem] tracking-[0.2em] text-muted-foreground uppercase font-medium mb-3">{title}</h2>
+      <div className="space-y-3">{children}</div>
     </div>
   );
 }
@@ -336,7 +384,7 @@ function FilterCheck({
   return (
     <div className="flex items-center gap-3">
       <Checkbox id={id} checked={checked} onCheckedChange={onChange} />
-      <Label htmlFor={id} className="text-sm font-normal text-muted-foreground">
+      <Label htmlFor={id} className="text-sm font-normal text-muted-foreground cursor-pointer select-none">
         {label}
       </Label>
     </div>

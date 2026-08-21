@@ -147,8 +147,7 @@ export function Header() {
               e.preventDefault();
               const query = new FormData(e.currentTarget).get("q");
               if (query) {
-                // Simplified navigation to a search results page or just category with query
-                window.location.href = `/categoria/lingerie?q=${encodeURIComponent(query as string)}`;
+                window.location.href = `/categoria/todos?q=${encodeURIComponent(query as string)}`;
                 setSearchOpen(false);
               }
             }}
