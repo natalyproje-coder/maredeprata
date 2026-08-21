@@ -125,21 +125,26 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = window.location.pathname;
+  const isAdminPath = location.startsWith("/admin");
 
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
         <div className="flex min-h-screen flex-col">
-          <Header />
-          {/* Required: nested routes render here. */}
+          {!isAdminPath && <Header />}
           <main className="flex-1">
             <Outlet />
           </main>
-          <Footer />
+          {!isAdminPath && <Footer />}
         </div>
+        {!isAdminPath && (
+          <>
+            <WhatsAppFab />
+            <MobileTabBar />
+          </>
+        )}
         <CartDrawer />
-        <WhatsAppFab />
-        <MobileTabBar />
         <Toaster />
       </StoreProvider>
     </QueryClientProvider>
