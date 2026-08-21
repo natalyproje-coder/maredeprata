@@ -8,10 +8,6 @@ export const requireAdmin = createMiddleware().server(async ({ next }) => {
     throw new Error("Unauthorized");
   }
 
-  // Check if it's the hardcoded admin email
-  if (session.user.email === "vivonirubens@gmail.com") {
-    return next();
-  }
 
   // Check database for admin role
   const { data, error } = await supabase

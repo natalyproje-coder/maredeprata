@@ -49,10 +49,17 @@ export const upsertProduct = createServerFn({ method: "POST" })
 export const createOrder = createServerFn({ method: "POST" })
   .inputValidator((data) => z.any().parse(data))
   .handler(async ({ data }) => {
-    // We allow anonymous orders but try to associate user if present
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    // Security: Override user_id from session if logged in to prevent spoofing
+    const orderData = {
+      ...data,
+      user_id: session?.user?.id || null
+    };
+
     const { error } = await supabase
       .from("orders")
-      .insert(data);
+      .insert(orderData);
     
     if (error) {
       console.error("Error creating order:", error);
