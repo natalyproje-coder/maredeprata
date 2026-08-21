@@ -8,7 +8,6 @@ export const requireAdmin = createMiddleware().server(async ({ next }) => {
     throw new Error("Unauthorized");
   }
 
-
   // Check database for admin role
   const { data, error } = await supabase
     .from("user_roles")

@@ -56,11 +56,6 @@ function AdminLayout() {
         return;
       }
 
-      const email = session.user.email;
-      if (email === "vivonirubens@gmail.com") {
-        setIsAdmin(true);
-        return;
-      }
 
       const { data, error } = await supabase
         .from("user_roles")
@@ -164,21 +159,25 @@ function ProductsManager() {
         badge: editing.badge || null,
         material: editing.material || "",
         in_stock: Number(editing.stock_quantity) > 0,
+        bestseller: !!editing.bestseller,
+        colors: Array.isArray(editing.colors) ? editing.colors : [],
+        sizes: Array.isArray(editing.sizes) ? editing.sizes : [],
         description: editing.description || "",
         details: Array.isArray(editing.details) ? editing.details : [],
         care: editing.care || "",
         stock_quantity: Number(editing.stock_quantity),
         meta: editing.meta || {},
-        bestseller: !!editing.bestseller,
-        colors: Array.isArray(editing.colors) ? editing.colors : [],
-        sizes: Array.isArray(editing.sizes) ? editing.sizes : [],
+        sort_order: typeof editing.sort_order === 'number' ? editing.sort_order : 0,
+        rating: typeof editing.rating === 'number' ? editing.rating : 5,
+        reviews: typeof editing.reviews === 'number' ? editing.reviews : 0,
+        created_on: editing.created_on || new Date().toISOString().split('T')[0],
       };
 
-      // If it's an update, ensure ID is included if present
       if (editing.id) {
         (payload as any).id = editing.id;
       }
       
+      console.log("Upserting product with payload:", payload);
       await upsertProduct({ data: payload });
       toast.success("Produto salvo com sucesso!");
       setEditing(null);
