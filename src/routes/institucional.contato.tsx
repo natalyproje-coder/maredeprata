@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSiteText } from "@/lib/catalog-data";
 import { whatsappLink } from "@/lib/catalog";
 
 export const Route = createFileRoute("/institucional/contato")({
@@ -27,6 +28,10 @@ export const Route = createFileRoute("/institucional/contato")({
 });
 
 function ContatoPage() {
+  const whatsappNumber = useSiteText("whatsapp_number");
+  const whatsappUrl = whatsappLink(whatsappNumber);
+  const businessEmail = useSiteText("business_email");
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
       <p className="eyebrow">Institucional</p>
@@ -59,12 +64,12 @@ function ContatoPage() {
         <div className="space-y-6 text-sm text-muted-foreground">
           <p className="flex items-center gap-3">
             <MessageCircle className="h-4 w-4 text-silver" />
-            <a href={whatsappLink} target="_blank" rel="noreferrer" className="hover:text-pearl">
+            <a href={whatsappUrl} target="_blank" rel="noreferrer" className="hover:text-pearl">
               Atendimento por WhatsApp
             </a>
           </p>
           <p className="flex items-center gap-3">
-            <Mail className="h-4 w-4 text-silver" /> ola@maredeprata.com
+            <Mail className="h-4 w-4 text-silver" /> {businessEmail}
           </p>
           <p className="flex items-center gap-3">
             <Clock className="h-4 w-4 text-silver" /> Seg a sex, 9h às 18h · Sáb, 9h às 13h
