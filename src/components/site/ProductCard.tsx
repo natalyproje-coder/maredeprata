@@ -102,11 +102,11 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 pt-4">
-        <span className="text-[0.6rem] tracking-[0.24em] text-muted-foreground uppercase">
+      <div className="flex flex-1 flex-col gap-1 pt-3 sm:pt-4">
+        <span className="text-[0.55rem] sm:text-[0.6rem] tracking-[0.2em] sm:tracking-[0.24em] text-muted-foreground uppercase">
           {product.categoryName}
         </span>
-        <h3 className="font-display text-lg leading-snug">
+        <h3 className="font-display text-base sm:text-lg leading-snug">
           <Link to="/produto/$slug" params={{ slug: product.slug }}>
             {product.name}
           </Link>

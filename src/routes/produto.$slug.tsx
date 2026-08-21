@@ -171,7 +171,7 @@ function ProductPage() {
         {/* INFO */}
         <div>
           <p className="eyebrow">{product.categoryName}</p>
-          <h1 className="font-display mt-3 text-4xl leading-tight sm:text-5xl">
+          <h1 className="font-display mt-3 text-3xl leading-tight sm:text-5xl">
             {product.name}
           </h1>
 
@@ -273,7 +273,7 @@ function ProductPage() {
           </div>
 
           {/* QUANTIDADE + AÇÕES */}
-          <div className="mt-8 grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+          <div className="mt-8 flex flex-col sm:grid sm:grid-cols-[auto_minmax(0,1fr)] gap-3">
             <div className="flex items-center border border-border">
               <button
                 type="button"
@@ -295,7 +295,7 @@ function ProductPage() {
             </div>
             <Button
               size="lg"
-              className="h-12 tracking-[0.28em] uppercase"
+              className="h-12 flex-1 tracking-[0.2em] sm:tracking-[0.28em] uppercase"
               disabled={!product.inStock}
               asChild={product.inStock}
               onClick={product.inStock ? add : undefined}
@@ -310,11 +310,11 @@ function ProductPage() {
             </Button>
           </div>
 
-          <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3">
+          <div className="mt-3 flex gap-3">
             <Button
               variant="outline"
               size="lg"
-              className="h-12 tracking-[0.24em] uppercase"
+              className="h-12 flex-1 tracking-[0.2em] sm:tracking-[0.24em] uppercase"
               disabled={!product.inStock}
               onClick={add}
             >
