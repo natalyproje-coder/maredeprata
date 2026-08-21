@@ -212,7 +212,7 @@ function ProductPage() {
           <div className="mt-8">
             <p className="eyebrow">Cor</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {product.colors.map((option) => (
+              {product.colors.map((option: string) => (
                 <button
                   key={option}
                   type="button"
@@ -235,7 +235,7 @@ function ProductPage() {
           <div className="mt-6">
             <p className="eyebrow">Tamanho</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {product.sizes.map((option) => (
+              {product.sizes.map((option: string) => (
                 <button
                   key={option}
                   type="button"
@@ -338,7 +338,7 @@ function ProductPage() {
               </AccordionTrigger>
               <AccordionContent>
                 <dl className="space-y-2 text-sm">
-                  {product.details.map((detail) => (
+                  {product.details.map((detail: { label: string; value: string }) => (
                     <div key={detail.label} className="grid grid-cols-[130px_minmax(0,1fr)] gap-2">
                       <dt className="text-muted-foreground">{detail.label}</dt>
                       <dd>{detail.value}</dd>
@@ -411,7 +411,7 @@ function ProductPage() {
       <section className="mt-24">
         <h2 className="font-display text-3xl">Você também vai gostar</h2>
         <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
-          {related.map((item) => (
+          {related.map((item: any) => (
             <ProductCard key={item.slug} product={item} />
           ))}
         </div>
