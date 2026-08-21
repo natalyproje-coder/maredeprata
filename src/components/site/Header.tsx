@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/site/Logo";
@@ -19,9 +19,13 @@ const nav = [
 
 export function Header() {
   const { count, setCartOpen, favorites } = useStore();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const isAdminPath = location.pathname.startsWith("/admin");
+  if (isAdminPath) return null;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
