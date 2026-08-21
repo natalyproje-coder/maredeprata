@@ -131,7 +131,20 @@ function ProductsManager() {
   const handleUpsert = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await upsertProduct({ data: editing });
+      const payload = {
+        ...editing,
+        category_name: editing.category_name || (editing.category ? editing.category.charAt(0).toUpperCase() + editing.category.slice(1) : "Lingerie"),
+        in_stock: editing.stock_quantity > 0,
+        compare_at: editing.compareAt,
+        stock_quantity: editing.stock_quantity,
+        // Remove virtual fields not in DB
+        compareAt: undefined,
+        categoryName: undefined,
+        inStock: undefined,
+        createdAt: undefined,
+      };
+      
+      await upsertProduct({ data: payload });
       toast.success("Produto salvo com sucesso!");
       setEditing(null);
       window.location.reload();
@@ -263,6 +276,50 @@ function ProductsManager() {
             />
           </div>
 
+          <div className="space-y-4 border border-border bg-secondary/20 p-4">
+            <h3 className="text-xs font-medium uppercase tracking-widest text-silver">Metadados Técnicos</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Guia de Tamanhos (Tipo)</Label>
+                <select 
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={editing.meta?.size_chart_type || ""}
+                  onChange={e => setEditing({
+                    ...editing, 
+                    meta: { ...editing.meta, size_chart_type: e.target.value }
+                  })}
+                >
+                  <option value="">Nenhum</option>
+                  <option value="lingerie">Lingerie (P/M/G/GG)</option>
+                  <option value="jewelry">Joias (Aros 12-24)</option>
+                  <option value="clothing">Roupas de Cama (Solteiro/Casal/...)</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Volume / Peso (ex: 50ml)</Label>
+                <Input 
+                  value={editing.meta?.volume || ""}
+                  onChange={e => setEditing({
+                    ...editing, 
+                    meta: { ...editing.meta, volume: e.target.value }
+                  })}
+                  placeholder="Para Sexy Shop"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Informações de Segurança / Modo de Uso</Label>
+              <Textarea 
+                value={editing.meta?.safety_info || ""}
+                onChange={e => setEditing({
+                  ...editing, 
+                  meta: { ...editing.meta, safety_info: e.target.value }
+                })}
+                placeholder="Contraindicações ou como usar"
+              />
+            </div>
+          </div>
+
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => setEditing(null)}>Cancelar</Button>
             <Button type="submit">Salvar Produto</Button>
@@ -286,7 +343,9 @@ function ProductsManager() {
           description: "",
           material: "",
           care: "",
-          details: []
+          details: [],
+          stock_quantity: 0,
+          meta: {}
         })}>
           <Plus className="mr-2 h-4 w-4" /> Novo Produto
         </Button>
@@ -326,9 +385,11 @@ function ProductsManager() {
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" size="icon" onClick={() => setEditing(p)}>
                       <Edit className="h-4 w-4" />
+                      <span className="sr-only">editar</span>
                     </Button>
                     <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(p.slug)}>
-                      <Trash2 className="h-4 w-4" /> deletar
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">deletar</span>
                     </Button>
                   </div>
                 </TableCell>

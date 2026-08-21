@@ -34,6 +34,9 @@ const virtual: Record<string, { name: string; description: string }> = {
 };
 
 export const Route = createFileRoute("/categoria/$slug")({
+  validateSearch: (search: Record<string, unknown>): { q?: string | undefined } => ({
+    q: search["q"] as string | undefined,
+  }),
   loader: ({ params }) => {
     const category = getCategory(params.slug);
     const meta = category
@@ -68,17 +71,53 @@ type SortKey = "relevantes" | "menor" | "maior" | "vendidos" | "recentes";
 
 function CategoryPage() {
   const { slug, name, description } = Route.useLoaderData();
-  const { products: allProducts, categories } = useCatalog();
+  const { products: allProducts, categories, content } = useCatalog();
+  const searchParams = Route.useSearch();
+  const query = searchParams.q?.toLowerCase() || "";
 
   const base = useMemo(() => {
+    let filtered = [...allProducts];
+    
     if (slug === "novidades") {
-      return [...allProducts].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      filtered = filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    } else if (slug === "ofertas") {
+      filtered = filtered.filter((p) => p.compareAt);
+    } else {
+      filtered = filtered.filter((p) => p.category === slug);
     }
-    if (slug === "ofertas") {
-      return allProducts.filter((p) => p.compareAt);
+
+    if (query) {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        p.description.toLowerCase().includes(query) ||
+        p.material.toLowerCase().includes(query)
+      );
     }
-    return allProducts.filter((p) => p.category === slug);
-  }, [allProducts, slug]);
+
+    return filtered;
+  }, [allProducts, slug, query]);
+
+  const isJewelry = slug === "semijoias";
+  const isBedding = slug === "cama-banho";
+  const isLingerie = slug === "lingerie" || slug === "moda-intima";
+  const isSexyShop = slug === "sexy-shop";
+
+  const isSpecial = slug === "novidades" || slug === "ofertas";
+  
+  const relevantSizes = useMemo(() => {
+    if (isSpecial) return allSizes;
+    return Array.from(new Set(base.flatMap(p => p.sizes)));
+  }, [base, isSpecial]);
+
+  const relevantColors = useMemo(() => {
+    if (isSpecial) return allColors;
+    return Array.from(new Set(base.flatMap(p => p.colors)));
+  }, [base, isSpecial]);
+
+  const relevantMaterials = useMemo(() => {
+    if (isSpecial) return allMaterials;
+    return Array.from(new Set(base.map(p => p.material)));
+  }, [base, isSpecial]);
 
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
@@ -150,27 +189,30 @@ function CategoryPage() {
               />
             ))}
           </FilterGroup>
-          <FilterGroup title="Tamanho">
-            <div className="flex flex-wrap gap-2">
-              {allSizes.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  aria-pressed={sizes.includes(s)}
-                  onClick={() => toggle(s, sizes, setSizes)}
-                  className={`border px-3 py-1.5 text-xs transition-colors ${
-                    sizes.includes(s)
-                      ? "border-silver bg-secondary text-pearl"
-                      : "border-border text-muted-foreground hover:text-pearl"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </FilterGroup>
-          <FilterGroup title="Cor">
-            {allColors.map((c) => (
+          {relevantSizes.length > 0 && (
+            <FilterGroup title={isJewelry ? "Aro / Tamanho" : "Tamanho"}>
+              <div className="flex flex-wrap gap-2">
+                {relevantSizes.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={sizes.includes(s)}
+                    onClick={() => toggle(s, sizes, setSizes)}
+                    className={`border px-3 py-1.5 text-xs transition-colors ${
+                      sizes.includes(s)
+                        ? "border-silver bg-secondary text-pearl"
+                        : "border-border text-muted-foreground hover:text-pearl"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </FilterGroup>
+          )}
+          {relevantColors.length > 0 && (
+            <FilterGroup title="Cor">
+            {relevantColors.map((c) => (
               <FilterCheck
                 key={c}
                 id={`color-${c}`}
@@ -179,9 +221,11 @@ function CategoryPage() {
                 onChange={() => toggle(c, colors, setColors)}
               />
             ))}
-          </FilterGroup>
-          <FilterGroup title="Material">
-            {allMaterials.map((m) => (
+            </FilterGroup>
+          )}
+          {relevantMaterials.length > 0 && (
+            <FilterGroup title="Material">
+            {relevantMaterials.map((m) => (
               <FilterCheck
                 key={m}
                 id={`mat-${m}`}
@@ -190,7 +234,8 @@ function CategoryPage() {
                 onChange={() => toggle(m, materials, setMaterials)}
               />
             ))}
-          </FilterGroup>
+            </FilterGroup>
+          )}
           <FilterGroup title="Preço até">
             <Slider
               value={[maxPrice]}

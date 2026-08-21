@@ -34,7 +34,7 @@ function Home() {
   const heroCta = useSiteText("hero_cta");
 
   const novidades = [...products]
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 4);
   const maisVendidos = products.filter((p) => p.bestseller).slice(0, 4);
   const banners = categories.filter((c) =>

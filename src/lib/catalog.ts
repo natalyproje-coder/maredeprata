@@ -87,6 +87,15 @@ export type Product = {
   details: { label: string; value: string }[];
   care: string;
   stock_quantity: number;
+  meta?: {
+    wash_instructions?: string;
+    size_chart_type?: "lingerie" | "jewelry" | "bedding" | "none";
+    usage_instructions?: string;
+    safety_info?: string;
+    volume?: string;
+    ingredients?: string;
+    warranty_months?: number;
+  };
 };
 
 export function applyCatalog(newProducts: Product[], newCategories: Category[]) {
@@ -456,7 +465,4 @@ export function installments(value: number, times = 6) {
   return `${times}x de ${formatPrice(value / times)} sem juros`;
 }
 
-export const WHATSAPP_NUMBER = "5512991139998";
-export const WHATSAPP_MESSAGE =
-  "Olá! Gostaria de saber mais sobre um produto da Maré de Prata.";
-export const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+export const whatsappLink = (number?: string) => `https://wa.me/${number || "5512991139998"}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre um produto da Maré de Prata.")}`;

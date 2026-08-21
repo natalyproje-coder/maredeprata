@@ -17,6 +17,13 @@ export const defaultContent: ContentMap = {
   hero_subtitle: "Seu desejo, seu brilho, sua essência.",
   hero_cta: "Comprar agora",
   whatsapp_number: "5512991139998",
+  business_cnpj: "00.000.000/0001-00",
+  business_name: "Maré de Prata E-commerce LTDA",
+  business_address: "São José dos Campos, SP",
+  business_email: "ola@maredeprata.com",
+  instagram_url: "https://instagram.com",
+  facebook_url: "https://facebook.com",
+  tiktok_url: "https://tiktok.com",
 };
 
 type ProductRow = {
@@ -40,6 +47,7 @@ type ProductRow = {
   details: unknown;
   care: string;
   stock_quantity: number;
+  meta: any;
 };
 
 export function rowToProduct(row: ProductRow): Product {
@@ -63,6 +71,7 @@ export function rowToProduct(row: ProductRow): Product {
       : [],
     care: row.care,
     stock_quantity: row.stock_quantity || 0,
+    meta: row.meta || {},
   };
 
   if (row.compare_at != null) {

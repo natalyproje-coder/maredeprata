@@ -141,13 +141,25 @@ export function Header() {
 
       {searchOpen ? (
         <div className="border-t border-border bg-background/95 px-4 py-4 backdrop-blur">
-          <div className="mx-auto max-w-3xl">
+          <form 
+            className="mx-auto max-w-3xl"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const query = new FormData(e.currentTarget).get("q");
+              if (query) {
+                // Simplified navigation to a search results page or just category with query
+                window.location.href = `/categoria/lingerie?q=${encodeURIComponent(query as string)}`;
+                setSearchOpen(false);
+              }
+            }}
+          >
             <Input
+              name="q"
               autoFocus
               placeholder="Buscar por peça, categoria ou material"
               aria-label="Buscar produtos"
             />
-          </div>
+          </form>
         </div>
       ) : null}
 
