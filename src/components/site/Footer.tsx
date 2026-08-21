@@ -1,9 +1,16 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Facebook, Instagram, Mail, MessageCircle, Music2 } from "lucide-react";
 import { Logo } from "@/components/site/Logo";
-import { whatsappLink } from "@/lib/catalog";
+import { useSiteText } from "@/lib/catalog-data";
 
 export function Footer() {
+  const location = useLocation();
+  const whatsappNumber = useSiteText("whatsapp_number");
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre um produto da Maré de Prata.`;
+
+  const isAdminPath = location.pathname.startsWith("/admin");
+  if (isAdminPath) return null;
+
   return (
     <footer className="border-t border-border bg-card/40 pb-24 md:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-16">

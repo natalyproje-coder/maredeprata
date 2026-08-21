@@ -17,10 +17,10 @@ import {
   allColors,
   allMaterials,
   allSizes,
-  categories,
   getCategory,
   productsByCategory,
 } from "@/lib/catalog";
+import { useCatalog } from "@/lib/catalog-data";
 
 const virtual: Record<string, { name: string; description: string }> = {
   novidades: {
@@ -68,15 +68,25 @@ type SortKey = "relevantes" | "menor" | "maior" | "vendidos" | "recentes";
 
 function CategoryPage() {
   const { slug, name, description } = Route.useLoaderData();
-  const base = useMemo(() => productsByCategory(slug), [slug]);
+  const { products: allProducts, categories } = useCatalog();
+
+  const base = useMemo(() => {
+    if (slug === "novidades") {
+      return [...allProducts].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    }
+    if (slug === "ofertas") {
+      return allProducts.filter((p) => p.compareAt);
+    }
+    return allProducts.filter((p) => p.category === slug);
+  }, [allProducts, slug]);
 
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
   const [materials, setMaterials] = useState<string[]>([]);
   const [cats, setCats] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState(700);
-  const [onlyStock, setOnlyStock] = useState(false);
-  const [onlyBest, setOnlyBest] = useState(false);
+  const [maxPrice, setMaxPrice] = useState<number>(700);
+  const [onlyStock, setOnlyStock] = useState<boolean>(false);
+  const [onlyBest, setOnlyBest] = useState<boolean>(false);
   const [sort, setSort] = useState<SortKey>("relevantes");
   const [filtersOpen, setFiltersOpen] = useState(false);
 

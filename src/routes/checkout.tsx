@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatPrice, installments } from "@/lib/catalog";
+import { useSiteText } from "@/lib/catalog-data";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,7 @@ const payments = [
 function CheckoutPage() {
   const { detailed, subtotal, clearCart } = useStore();
   const navigate = useNavigate();
+  const whatsappNumber = useSiteText("whatsapp_number");
   const [method, setMethod] = useState<(typeof payments)[number]["id"]>("pix");
   const [done, setDone] = useState<string | null>(null);
 
@@ -51,10 +53,36 @@ function CheckoutPage() {
       toast.error("Sua sacola está vazia.");
       return;
     }
+
+    const formData = new FormData(event.currentTarget);
+    const customerName = formData.get("nome") as string;
+    
     const code = `MP-${Math.floor(100000 + Math.random() * 899999)}`;
+    
+    // Build WhatsApp message
+    const itemsSummary = detailed.map(item => 
+      `• ${item.product.name} (${item.size}, ${item.color}) x${item.quantity} - ${formatPrice(item.product.price * item.quantity)}`
+    ).join('\n');
+
+    const message = `Olá! Meu nome é ${customerName}. Acabei de fazer um pedido na Maré de Prata!\n\n` +
+      `*Pedido:* ${code}\n` +
+      `*Itens:*\n${itemsSummary}\n\n` +
+      `*Subtotal:* ${formatPrice(subtotal)}\n` +
+      `*Frete:* ${shipping === 0 ? "Grátis" : formatPrice(shipping)}\n` +
+      `*Desconto Pix:* ${formatPrice(pixDiscount)}\n` +
+      `*Total:* ${formatPrice(total)}\n\n` +
+      `*Forma de Pagamento:* ${payments.find(p => p.id === method)?.label}\n\n` +
+      `Por favor, me informe os próximos passos.`;
+
+    const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    
     clearCart();
     setDone(code);
-    toast.success("Pedido confirmado. Enviaremos os detalhes por e-mail.");
+    toast.success("Pedido gerado! Redirecionando para o WhatsApp...");
+    
+    setTimeout(() => {
+      window.open(waLink, '_blank');
+    }, 1500);
   }
 
   if (done) {

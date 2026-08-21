@@ -131,7 +131,6 @@ function RootComponent() {
       <StoreProvider>
         <div className="flex min-h-screen flex-col">
           <Header />
-          {/* Required: nested routes render here. */}
           <main className="flex-1">
             <Outlet />
           </main>

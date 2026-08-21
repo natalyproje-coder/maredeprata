@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Heart, RefreshCw, ShieldCheck, Star, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/site/ProductCard";
@@ -17,6 +17,7 @@ import {
   installments,
   relatedProducts,
 } from "@/lib/catalog";
+import { useCatalog } from "@/lib/catalog-data";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -76,7 +77,19 @@ export const Route = createFileRoute("/produto/$slug")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { products } = useCatalog();
+  
+  const product = useMemo(() => {
+    return products.find(p => p.slug === loaderData.product.slug) || loaderData.product;
+  }, [products, loaderData.product]);
+
+  const related = useMemo(() => {
+    return products
+      .filter((p) => p.slug !== product.slug && p.category === product.category)
+      .concat(products.filter((p) => p.category !== product.category))
+      .slice(0, 4);
+  }, [products, product]);
   const { addItem, setCartOpen, toggleFavorite, isFavorite } = useStore();
   const [image, setImage] = useState(0);
   const [size, setSize] = useState(product.sizes[0] ?? "Único");
@@ -124,7 +137,7 @@ function ProductPage() {
             />
           </div>
           <div className="mt-3 flex gap-3">
-            {product.images.map((src, index) => (
+            {product.images.map((src: string, index: number) => (
               <button
                 key={src}
                 type="button"
@@ -199,7 +212,7 @@ function ProductPage() {
           <div className="mt-8">
             <p className="eyebrow">Cor</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {product.colors.map((option) => (
+              {product.colors.map((option: string) => (
                 <button
                   key={option}
                   type="button"
@@ -222,7 +235,7 @@ function ProductPage() {
           <div className="mt-6">
             <p className="eyebrow">Tamanho</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {product.sizes.map((option) => (
+              {product.sizes.map((option: string) => (
                 <button
                   key={option}
                   type="button"
@@ -325,7 +338,7 @@ function ProductPage() {
               </AccordionTrigger>
               <AccordionContent>
                 <dl className="space-y-2 text-sm">
-                  {product.details.map((detail) => (
+                  {product.details.map((detail: { label: string; value: string }) => (
                     <div key={detail.label} className="grid grid-cols-[130px_minmax(0,1fr)] gap-2">
                       <dt className="text-muted-foreground">{detail.label}</dt>
                       <dd>{detail.value}</dd>
@@ -398,7 +411,7 @@ function ProductPage() {
       <section className="mt-24">
         <h2 className="font-display text-3xl">Você também vai gostar</h2>
         <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
-          {relatedProducts(product).map((item) => (
+          {related.map((item: any) => (
             <ProductCard key={item.slug} product={item} />
           ))}
         </div>

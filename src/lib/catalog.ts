@@ -72,21 +72,28 @@ export type Product = {
   category: CategorySlug;
   categoryName: string;
   price: number;
-  compareAt?: number;
+  compareAt?: number | undefined;
   images: string[];
-  badge?: "novidade" | "oferta" | "mais-vendido";
+  badge?: "novidade" | "oferta" | "mais-vendido" | undefined;
   rating: number;
   reviews: number;
   colors: string[];
   sizes: string[];
   material: string;
   inStock: boolean;
-  bestseller?: boolean;
+  bestseller?: boolean | undefined;
   createdAt: string;
   description: string;
   details: { label: string; value: string }[];
   care: string;
 };
+
+export function applyCatalog(newProducts: Product[], newCategories: Category[]) {
+  products.length = 0;
+  products.push(...newProducts);
+  categories.length = 0;
+  categories.push(...newCategories);
+}
 
 const lingerieSizes = ["P", "M", "G", "GG"];
 const joiaSizes = ["14", "16", "18", "Único"];
