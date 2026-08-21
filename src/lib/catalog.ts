@@ -451,10 +451,9 @@ export function productsByCategory(slug: string) {
   return products.filter((p) => p.category === slug);
 }
 
-export function relatedProducts(product: Product) {
-  return products
+export function relatedProducts(product: Product, allProducts: Product[]) {
+  return allProducts
     .filter((p) => p.slug !== product.slug && p.category === product.category)
-    .concat(products.filter((p) => p.category !== product.category))
     .slice(0, 4);
 }
 
