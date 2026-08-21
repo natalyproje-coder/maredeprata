@@ -25,7 +25,6 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
 
   const isAdminPath = location.pathname.startsWith("/admin");
-  if (isAdminPath) return null;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -33,6 +32,8 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  if (isAdminPath) return null;
 
   return (
     <header

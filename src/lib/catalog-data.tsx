@@ -46,7 +46,7 @@ type ProductRow = {
   description: string;
   details: unknown;
   care: string;
-  stock_quantity: number;
+  stock_quantity: number | null;
   meta: any;
 };
 

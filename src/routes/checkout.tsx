@@ -136,13 +136,13 @@ function CheckoutPage() {
       // Create order in database
       const orderPayload = {
         order_number: code,
-        user_id: userId,
+        user_id: userId || null,
         customer_name: customerName,
         customer_email: customerEmail,
-        customer_phone: customerPhone,
+        customer_phone: customerPhone || null,
         shipping_address: shippingAddress,
         items: items,
-        total_amount: total,
+        total_amount: Number(total.toFixed(2)),
         status: 'pending'
       };
       
