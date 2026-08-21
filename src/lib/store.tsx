@@ -66,11 +66,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [favorites, hydrated]);
 
   const addItem = useCallback((item: CartItem) => {
+    const product = getProduct(item.slug);
+    if (!product) return;
+
     setItems((prev) => {
       const found = prev.find((i) => i.slug === item.slug && i.size === item.size);
+      const currentQty = found ? found.quantity : 0;
+      const newQty = currentQty + item.quantity;
+
+      if (newQty > product.stock_quantity) {
+        return prev; // Or we could cap it, but let's keep it simple for now
+      }
+
       if (found) {
         return prev.map((i) =>
-          i === found ? { ...i, quantity: i.quantity + item.quantity } : i,
+          i === found ? { ...i, quantity: newQty } : i,
         );
       }
       return [...prev, item];
@@ -78,11 +88,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateQuantity = useCallback((slug: string, size: string, quantity: number) => {
-    setItems((prev) =>
-      quantity <= 0
+    const product = getProduct(slug);
+    if (!product) return;
+
+    setItems((prev) => {
+      const targetQty = Math.min(quantity, product.stock_quantity);
+      return targetQty <= 0
         ? prev.filter((i) => !(i.slug === slug && i.size === size))
-        : prev.map((i) => (i.slug === slug && i.size === size ? { ...i, quantity } : i)),
-    );
+        : prev.map((i) => (i.slug === slug && i.size === size ? { ...i, quantity: targetQty } : i));
+    });
   }, []);
 
   const removeItem = useCallback((slug: string, size: string) => {
