@@ -328,6 +328,7 @@ function Field({
   label,
   type = "text",
   required,
+  defaultValue,
 }: {
   id: string;
   label: string;
