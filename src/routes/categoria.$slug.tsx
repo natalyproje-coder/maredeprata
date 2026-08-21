@@ -189,24 +189,25 @@ function CategoryPage() {
               />
             ))}
           </FilterGroup>
-          <FilterGroup title="Tamanho">
-            <div className="flex flex-wrap gap-2">
-              {relevantSizes.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  aria-pressed={sizes.includes(s)}
-                  onClick={() => toggle(s, sizes, setSizes)}
-                  className={`border px-3 py-1.5 text-xs transition-colors ${
-                    sizes.includes(s)
-                      ? "border-silver bg-secondary text-pearl"
-                      : "border-border text-muted-foreground hover:text-pearl"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+          {relevantSizes.length > 0 && (
+            <FilterGroup title={isJewelry ? "Aro / Tamanho" : "Tamanho"}>
+              <div className="flex flex-wrap gap-2">
+                {relevantSizes.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={sizes.includes(s)}
+                    onClick={() => toggle(s, sizes, setSizes)}
+                    className={`border px-3 py-1.5 text-xs transition-colors ${
+                      sizes.includes(s)
+                        ? "border-silver bg-secondary text-pearl"
+                        : "border-border text-muted-foreground hover:text-pearl"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </FilterGroup>
           )}
           {relevantColors.length > 0 && (
