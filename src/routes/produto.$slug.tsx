@@ -17,6 +17,7 @@ import {
   installments,
   relatedProducts,
 } from "@/lib/catalog";
+import { useCatalog } from "@/lib/catalog-data";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -76,7 +77,19 @@ export const Route = createFileRoute("/produto/$slug")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { products } = useCatalog();
+  
+  const product = useMemo(() => {
+    return products.find(p => p.slug === loaderData.product.slug) || loaderData.product;
+  }, [products, loaderData.product]);
+
+  const related = useMemo(() => {
+    return products
+      .filter((p) => p.slug !== product.slug && p.category === product.category)
+      .concat(products.filter((p) => p.category !== product.category))
+      .slice(0, 4);
+  }, [products, product]);
   const { addItem, setCartOpen, toggleFavorite, isFavorite } = useStore();
   const [image, setImage] = useState(0);
   const [size, setSize] = useState(product.sizes[0] ?? "Único");
@@ -398,7 +411,7 @@ function ProductPage() {
       <section className="mt-24">
         <h2 className="font-display text-3xl">Você também vai gostar</h2>
         <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
-          {relatedProducts(product).map((item) => (
+          {related.map((item) => (
             <ProductCard key={item.slug} product={item} />
           ))}
         </div>

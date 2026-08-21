@@ -4,7 +4,7 @@ import hero from "@/assets/hero.jpg";
 import { ProductCard } from "@/components/site/ProductCard";
 import { InstagramSection } from "@/components/site/InstagramSection";
 import { Button } from "@/components/ui/button";
-import { categories, products } from "@/lib/catalog";
+import { useCatalog, useSiteText } from "@/lib/catalog-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,6 +27,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const { products, categories } = useCatalog();
+  const heroEyebrow = useSiteText("hero_eyebrow");
+  const heroTitle = useSiteText("hero_title");
+  const heroSubtitle = useSiteText("hero_subtitle");
+  const heroCta = useSiteText("hero_cta");
+
   const novidades = [...products]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .slice(0, 4);
@@ -59,17 +65,17 @@ function Home() {
 
         <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col items-start justify-end px-4 pb-24 sm:justify-center sm:pb-0">
           <div className="animate-rise max-w-2xl">
-            <p className="eyebrow">Coleção Maré Alta</p>
+            <p className="eyebrow">{heroEyebrow}</p>
             <h1 className="font-display mt-6 text-5xl leading-[0.95] tracking-[0.06em] text-silver-gradient sm:text-7xl lg:text-8xl">
-              MARÉ DE PRATA
+              {heroTitle}
             </h1>
             <p className="font-display mt-6 text-xl text-pearl/90 italic sm:text-2xl">
-              “Seu desejo, seu brilho, sua essência.”
+              “{heroSubtitle}”
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Button asChild size="lg" className="tracking-[0.28em] uppercase">
                 <Link to="/categoria/$slug" params={{ slug: "novidades" }}>
-                  Comprar agora
+                  {heroCta}
                 </Link>
               </Button>
               <Button
