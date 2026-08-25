@@ -136,7 +136,6 @@ function CheckoutPage() {
       // Create order in database
       const orderPayload = {
         order_number: code,
-        user_id: userId || null,
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone || null,

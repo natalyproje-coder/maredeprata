@@ -71,18 +71,14 @@ function AccountPage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function checkAdmin(userId: string, email?: string) {
-    if (email === "vivonirubens@gmail.com") {
-      setIsAdmin(true);
-      return;
-    }
+  async function checkAdmin(userId: string) {
     const { data } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
       .eq("role", "admin")
-      .single();
-    if (data) setIsAdmin(true);
+      .maybeSingle();
+    setIsAdmin(!!data);
   }
 
   async function fetchOrders(userId: string) {
