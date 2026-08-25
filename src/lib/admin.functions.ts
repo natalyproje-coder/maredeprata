@@ -27,7 +27,7 @@ const productSchema = z
     sort_order: z.coerce.number().int().default(0),
     rating: z.coerce.number().default(5),
     reviews: z.coerce.number().int().default(0),
-    created_on: z.string().default(() => new Date().toISOString().split("T")[0]),
+    created_on: z.string().default(() => new Date().toISOString().slice(0, 10)),
   })
   .strip();
 
