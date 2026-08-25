@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireAdmin, getOptionalUserId } from "./auth.server";
+import { requireAdmin } from "./auth.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const productSchema = z
@@ -153,6 +153,7 @@ export const createOrder = createServerFn({ method: "POST" })
   .inputValidator((data) => orderSchema.parse(data))
   .handler(async ({ data }) => {
     // The owner is derived from the verified bearer token, never from input.
+    const { getOptionalUserId } = await import("./optional-user.server");
     const userId = await getOptionalUserId();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
