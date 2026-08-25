@@ -51,7 +51,7 @@ function AccountPage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        checkAdmin(session.user.id, session.user.email);
+        checkAdmin(session.user.id);
         fetchOrders(session.user.id);
       }
       setLoading(false);
@@ -60,7 +60,7 @@ function AccountPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) {
-        checkAdmin(session.user.id, session.user.email);
+        checkAdmin(session.user.id);
         fetchOrders(session.user.id);
       } else {
         setIsAdmin(false);
@@ -71,18 +71,14 @@ function AccountPage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function checkAdmin(userId: string, email?: string) {
-    if (email === "vivonirubens@gmail.com") {
-      setIsAdmin(true);
-      return;
-    }
+  async function checkAdmin(userId: string) {
     const { data } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
       .eq("role", "admin")
-      .single();
-    if (data) setIsAdmin(true);
+      .maybeSingle();
+    setIsAdmin(!!data);
   }
 
   async function fetchOrders(userId: string) {
