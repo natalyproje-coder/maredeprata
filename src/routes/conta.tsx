@@ -51,7 +51,7 @@ function AccountPage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        checkAdmin(session.user.id, session.user.email);
+        checkAdmin(session.user.id);
         fetchOrders(session.user.id);
       }
       setLoading(false);
@@ -60,7 +60,7 @@ function AccountPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) {
-        checkAdmin(session.user.id, session.user.email);
+        checkAdmin(session.user.id);
         fetchOrders(session.user.id);
       } else {
         setIsAdmin(false);
