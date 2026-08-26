@@ -106,6 +106,7 @@ export type Database = {
           images: string[]
           in_stock: boolean
           material: string
+          meta: Json
           name: string
           price: number
           rating: number
@@ -131,6 +132,7 @@ export type Database = {
           images?: string[]
           in_stock?: boolean
           material?: string
+          meta?: Json
           name: string
           price?: number
           rating?: number
@@ -156,6 +158,7 @@ export type Database = {
           images?: string[]
           in_stock?: boolean
           material?: string
+          meta?: Json
           name?: string
           price?: number
           rating?: number

@@ -20,7 +20,9 @@ const productSchema = z
     colors: z.array(z.string()).default([]),
     sizes: z.array(z.string()).default([]),
     description: z.string().default(""),
-    details: z.array(z.string()).default([]),
+    details: z
+      .array(z.object({ label: z.string().default(""), value: z.string().default("") }))
+      .default([]),
     care: z.string().default(""),
     stock_quantity: z.coerce.number().int().min(0).default(0),
     meta: z.record(z.string(), z.any()).default({}),
