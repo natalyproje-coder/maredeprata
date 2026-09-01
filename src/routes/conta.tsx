@@ -339,7 +339,7 @@ function AccountPage() {
           <LogOut className="mr-2 h-4 w-4" /> Sair
         </Button>
         {isAdmin && (
-          <Button className="bg-silver-gradient text-black" onClick={() => navigate({ to: "/admin" })}>
+          <Button variant="outline" onClick={() => navigate({ to: "/admin" })}>
             Painel Admin
           </Button>
         )}
